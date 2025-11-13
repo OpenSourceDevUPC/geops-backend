@@ -1,0 +1,58 @@
+package com.geopslabs.geops.backend.coupons.domain.model.commands;
+
+/**
+ * CreateCouponCommand
+ *
+ * Command record that encapsulates all the necessary data to create a new coupon.
+ * This command validates input data and ensures that required fields are properly provided
+ * for coupon creation, supporting coupon generation from payments and offer redemption.
+ *
+ * @summary Command to create a new coupon
+ * @param userId The unique identifier of the user who owns the coupon
+ * @param paymentId The payment identifier that generated this coupon
+ * @param paymentCode The payment code generated at payment time
+ * @param productType The product type copied from payment (optional)
+ * @param offerId The reference to the offer id (optional)
+ * @param code The coupon code to redeem
+ * @param expiresAt The expiration date of the coupon (optional)
+ *
+ * @since 1.0
+ * @author GeOps Labs
+ */
+public record CreateCouponCommand(
+    String userId,
+    String paymentId,
+    String paymentCode,
+    String productType,
+    Long offerId,
+    String code,
+    String expiresAt
+) {
+    /**
+     * Compact constructor that validates the command parameters
+     *
+     * @throws IllegalArgumentException if validation fails
+     */
+    public CreateCouponCommand {
+        if (userId == null || userId.isBlank()) {
+            throw new IllegalArgumentException("userId cannot be null or empty");
+        }
+
+        if (paymentId == null || paymentId.isBlank()) {
+            throw new IllegalArgumentException("paymentId cannot be null or empty");
+        }
+
+        if (paymentCode == null || paymentCode.isBlank()) {
+            throw new IllegalArgumentException("paymentCode cannot be null or empty");
+        }
+
+        if (code == null || code.isBlank()) {
+            throw new IllegalArgumentException("code cannot be null or empty");
+        }
+
+        // Validate offer ID if provided
+        if (offerId != null && offerId <= 0) {
+            throw new IllegalArgumentException("offerId must be positive if provided");
+        }
+    }
+}

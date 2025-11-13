@@ -6,6 +6,7 @@ import com.geopslabs.geops.backend.cart.domain.services.CartCommandService;
 import com.geopslabs.geops.backend.cart.domain.services.CartQueryService;
 import com.geopslabs.geops.backend.cart.interfaces.rest.resources.CartResource;
 import com.geopslabs.geops.backend.cart.interfaces.rest.resources.CartItemResource;
+import com.geopslabs.geops.backend.cart.interfaces.rest.resources.UpdateCartItemQuantityResource;
 import com.geopslabs.geops.backend.cart.interfaces.rest.transform.CartResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -108,7 +109,15 @@ public class CartController {
 
     @Operation(summary = "Update cart item quantity")
     @PutMapping("/user/{userId}/items/{offerId}")
-    public ResponseEntity<CartResource> updateItemQuantity(@PathVariable String userId, @PathVariable String offerId, @RequestParam int quantity) {
+    public ResponseEntity<CartResource> updateItemQuantity(@PathVariable String userId,
+                                                           @PathVariable String offerId,
+                                                           @RequestBody UpdateCartItemQuantityResource payload) {
+        if (payload == null || payload.quantity() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        int quantity = payload.quantity();
+
         var cartOpt = cartQueryService.getCartByUserId(userId);
         if (cartOpt.isEmpty()) return ResponseEntity.notFound().build();
 

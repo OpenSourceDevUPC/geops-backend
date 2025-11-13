@@ -13,6 +13,10 @@ import com.geopslabs.geops.backend.coupons.interfaces.rest.transform.CreateCoupo
 import com.geopslabs.geops.backend.coupons.interfaces.rest.transform.CreateManyCouponsCommandFromResourceAssembler;
 import com.geopslabs.geops.backend.coupons.interfaces.rest.transform.CouponResourceFromEntityAssembler;
 import com.geopslabs.geops.backend.coupons.domain.model.commands.UpdateCouponCommand;
+import com.geopslabs.geops.backend.offers.domain.services.OfferQueryService;
+import com.geopslabs.geops.backend.offers.domain.model.queries.GetOfferByIdQuery;
+import com.geopslabs.geops.backend.offers.domain.model.queries.GetOffersByIdsQuery;
+import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +26,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -50,17 +58,21 @@ public class CouponController {
 
     private final CouponCommandService couponCommandService;
     private final CouponQueryService couponQueryService;
+    private final OfferQueryService offerQueryService;
 
     /**
      * Constructor for dependency injection
      *
      * @param couponCommandService Service for handling coupon commands
      * @param couponQueryService Service for handling coupon queries
+     * @param offerQueryService Service for handling offer queries (used to embed offer data)
      */
     public CouponController(CouponCommandService couponCommandService,
-                           CouponQueryService couponQueryService) {
+                           CouponQueryService couponQueryService,
+                           OfferQueryService offerQueryService) {
         this.couponCommandService = couponCommandService;
         this.couponQueryService = couponQueryService;
+        this.offerQueryService = offerQueryService;
     }
 
     /**
@@ -87,7 +99,7 @@ public class CouponController {
             return ResponseEntity.badRequest().build();
         }
 
-        var couponResource = CouponResourceFromEntityAssembler.toResourceFromEntity(coupon.get());
+        var couponResource = mapWithOffer(coupon.get());
         return new ResponseEntity<>(couponResource, CREATED);
     }
 
@@ -114,7 +126,7 @@ public class CouponController {
             var coupons = couponCommandService.handle(command);
 
             var couponResources = coupons.stream()
-                    .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                    .map(this::mapWithOffer)
                     .toList();
 
             return new ResponseEntity<>(couponResources, CREATED);
@@ -144,7 +156,7 @@ public class CouponController {
         var coupons = couponCommandService.handle(command);
 
         var couponResources = coupons.stream()
-                .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                .map(this::mapWithOffer)
                 .toList();
 
         return new ResponseEntity<>(couponResources, CREATED);
@@ -177,7 +189,7 @@ public class CouponController {
                 return ResponseEntity.notFound().build();
             }
 
-            var couponResource = CouponResourceFromEntityAssembler.toResourceFromEntity(coupon.get());
+            var couponResource = mapWithOffer(coupon.get());
             return ResponseEntity.ok(couponResource);
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().build();
@@ -206,26 +218,21 @@ public class CouponController {
             @Parameter(description = "Relationships to expand (comma-separated)") @RequestParam(name = "_expand", required = false) String expand,
             @Parameter(description = "Relationships to embed (comma-separated)") @RequestParam(name = "_embed", required = false) String embed) {
 
-        List<CouponResource> couponResources;
+        List<com.geopslabs.geops.backend.coupons.domain.model.aggregates.Coupon> coupons;
 
         if (userId != null && !userId.isBlank()) {
-            // Filter by user ID if provided
             var query = new GetAllCouponsByUserIdQuery(userId);
-            var coupons = couponQueryService.handle(query);
-            couponResources = coupons.stream()
-                    .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
-                    .toList();
+            coupons = couponQueryService.handle(query);
         } else {
-            // Get all coupons
-            var coupons = couponQueryService.getAllCoupons();
-            couponResources = coupons.stream()
-                    .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
-                    .toList();
+            coupons = couponQueryService.getAllCoupons();
         }
 
-        // Note: _expand and _embed parameters are acknowledged but not implemented
-        // In a full implementation, these would be used to include related offer data
-        // For now, they are accepted to maintain compatibility with frontend expectations
+        // Batch fetch offers to avoid N+1 queries
+        var offerMap = batchFetchOffersForCoupons(coupons);
+
+        var couponResources = coupons.stream()
+                .map(c -> mapWithOffer(c, offerMap.get(c.getOfferId())))
+                .toList();
 
         return ResponseEntity.ok(couponResources);
     }
@@ -271,7 +278,7 @@ public class CouponController {
                 return ResponseEntity.badRequest().build();
             }
 
-            var couponResource = CouponResourceFromEntityAssembler.toResourceFromEntity(coupon.get());
+            var couponResource = mapWithOffer(coupon.get());
             return ResponseEntity.ok(couponResource);
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().build();
@@ -336,8 +343,10 @@ public class CouponController {
 
         var query = new GetAllCouponsByUserIdQuery(userId);
         var coupons = couponQueryService.handle(query);
+
+        var offerMap = batchFetchOffersForCoupons(coupons);
         var couponResources = coupons.stream()
-                .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                .map(c -> mapWithOffer(c, offerMap.get(c.getOfferId())))
                 .toList();
 
         return ResponseEntity.ok(couponResources);
@@ -360,8 +369,10 @@ public class CouponController {
 
         var query = new GetCouponsByPaymentIdQuery(paymentId);
         var coupons = couponQueryService.handle(query);
+
+        var offerMap = batchFetchOffersForCoupons(coupons);
         var couponResources = coupons.stream()
-                .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                .map(c -> mapWithOffer(c, offerMap.get(c.getOfferId())))
                 .toList();
 
         return ResponseEntity.ok(couponResources);
@@ -390,7 +401,7 @@ public class CouponController {
             return ResponseEntity.notFound().build();
         }
 
-        var couponResource = CouponResourceFromEntityAssembler.toResourceFromEntity(coupon.get());
+        var couponResource = mapWithOffer(coupon.get());
         return ResponseEntity.ok(couponResource);
     }
 
@@ -410,8 +421,10 @@ public class CouponController {
             @Parameter(description = "User unique identifier") @PathVariable String userId) {
 
         var coupons = couponQueryService.getValidCouponsByUserId(userId);
+
+        var offerMap = batchFetchOffersForCoupons(coupons);
         var couponResources = coupons.stream()
-                .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                .map(c -> mapWithOffer(c, offerMap.get(c.getOfferId())))
                 .toList();
 
         return ResponseEntity.ok(couponResources);
@@ -429,10 +442,69 @@ public class CouponController {
     @GetMapping("/expired")
     public ResponseEntity<List<CouponResource>> getExpiredCoupons() {
         var coupons = couponQueryService.getExpiredCoupons();
+
+        var offerMap = batchFetchOffersForCoupons(coupons);
         var couponResources = coupons.stream()
-                .map(CouponResourceFromEntityAssembler::toResourceFromEntity)
+                .map(c -> mapWithOffer(c, offerMap.get(c.getOfferId())))
                 .toList();
 
         return ResponseEntity.ok(couponResources);
+    }
+
+    /**
+     * Helper: Maps a Coupon entity to a CouponResource and attempts to load the related Offer
+     * when coupon.offerId is present. If fetching the Offer fails or is not present, the
+     * returned resource will have a null offer field.
+     *
+     * @param coupon Coupon domain entity
+     * @return CouponResource including optional embedded OfferResource
+     */
+    private CouponResource mapWithOffer(com.geopslabs.geops.backend.coupons.domain.model.aggregates.Coupon coupon) {
+        if (coupon.getOfferId() == null) {
+            return CouponResourceFromEntityAssembler.toResourceFromEntity(coupon);
+        }
+
+        try {
+            Optional<Offer> offerOpt = offerQueryService.handle(new GetOfferByIdQuery(coupon.getOfferId()));
+            return CouponResourceFromEntityAssembler.toResourceFromEntityWithOffer(coupon, offerOpt.orElse(null));
+        } catch (Exception e) {
+            // If offer lookup fails, return coupon without embedded offer to avoid breaking client
+            System.err.println("Failed to load offer for coupon " + coupon.getId() + ": " + e.getMessage());
+            return CouponResourceFromEntityAssembler.toResourceFromEntity(coupon);
+        }
+    }
+
+    /**
+     * Overload that maps coupon using a pre-fetched Offer (may be null).
+     * This helper is used by list endpoints after batch fetching offers.
+     */
+    private CouponResource mapWithOffer(com.geopslabs.geops.backend.coupons.domain.model.aggregates.Coupon coupon, Offer offer) {
+        if (coupon.getOfferId() == null) {
+            return CouponResourceFromEntityAssembler.toResourceFromEntity(coupon);
+        }
+        return CouponResourceFromEntityAssembler.toResourceFromEntityWithOffer(coupon, offer);
+    }
+
+    /**
+     * Batch fetch offers for a list of coupons and return a map offerId -> Offer.
+     * If no offer ids are present or an error occurs, returns an empty map.
+     */
+    private Map<Long, Offer> batchFetchOffersForCoupons(List<com.geopslabs.geops.backend.coupons.domain.model.aggregates.Coupon> coupons) {
+        try {
+            Set<Long> ids = coupons.stream()
+                    .map(com.geopslabs.geops.backend.coupons.domain.model.aggregates.Coupon::getOfferId)
+                    .filter(id -> id != null && id > 0)
+                    .collect(Collectors.toSet());
+
+            if (ids.isEmpty()) {
+                return Map.of();
+            }
+
+            var offers = offerQueryService.handle(new GetOffersByIdsQuery(ids.stream().toList()));
+            return offers.stream().collect(Collectors.toMap(Offer::getId, o -> o));
+        } catch (Exception e) {
+            System.err.println("Failed to batch fetch offers: " + e.getMessage());
+            return Map.of();
+        }
     }
 }

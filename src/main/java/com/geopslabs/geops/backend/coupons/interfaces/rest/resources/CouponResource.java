@@ -1,5 +1,7 @@
 package com.geopslabs.geops.backend.coupons.interfaces.rest.resources;
 
+import com.geopslabs.geops.backend.offers.interfaces.rest.resources.OfferResource;
+
 /**
  * CouponResource
  *
@@ -15,6 +17,7 @@ package com.geopslabs.geops.backend.coupons.interfaces.rest.resources;
  * @param paymentCode The payment code generated at payment time
  * @param productType The product type copied from payment (optional)
  * @param offerId The reference to the offer id (optional)
+ * @param offer The optional embedded offer data (when requested)
  * @param code The coupon code to redeem
  * @param expiresAt The expiration date of the coupon (optional)
  * @param createdAt Timestamp when the coupon was created
@@ -30,6 +33,7 @@ public record CouponResource(
     String paymentCode,
     String productType,
     Long offerId,
+    OfferResource offer,
     String code,
     String expiresAt,
     String createdAt,

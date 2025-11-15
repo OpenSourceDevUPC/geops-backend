@@ -1,11 +1,9 @@
-FROM eclipse-temurin:17-jdk-focal
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
+COPY . ./
 
-COPY src ./src
+RUN ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean dependency:list install
 
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["sh", "-c", "java -jar target/*.jar"]

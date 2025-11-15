@@ -16,25 +16,34 @@ import java.util.List;
  *
  * This configuration enables Cross-Origin requests from the frontend development
  * server and allows common HTTP methods and headers used by the application.
- * The allowed origin is configurable via the `frontend.url` property and
- * defaults to http://localhost:4200 for development.
+ * The allowed origins are configurable via the `frontend.url` and
+ * `prod.frontend.url` properties.
  */
 @Configuration
 public class WebConfig {
 
-    private final String frontendUrl;
+    private final List<String> allowedOrigins;
 
-    public WebConfig(@Value("${frontend.url:http://localhost:4200}") String frontendUrl) {
-        this.frontendUrl = frontendUrl;
+    public WebConfig(
+            @Value("${frontend.url:http://localhost:4200}") String frontendUrl,
+            @Value("${prod.frontend.url:}") String prodFrontendUrl
+    ) {
+        List<String> origins = new ArrayList<>();
+        if (frontendUrl != null && !frontendUrl.isBlank()) {
+            origins.add(frontendUrl);
+        }
+        if (prodFrontendUrl != null && !prodFrontendUrl.isBlank()) {
+            origins.add(prodFrontendUrl);
+        }
+        this.allowedOrigins = Collections.unmodifiableList(origins);
     }
 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        // Allow only the configured frontend host in development. Adjust for production.
-        config.setAllowedOrigins(Collections.singletonList(frontendUrl));
+        // Use configured allowed origins (dev and optional prod)
+        config.setAllowedOrigins(this.allowedOrigins);
 
-        // Use a mutable list for allowed methods to avoid NPE on add
         List<String> methods = new ArrayList<>();
         methods.add("GET");
         methods.add("POST");
@@ -50,7 +59,6 @@ public class WebConfig {
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Apply to all API endpoints
         source.registerCorsConfiguration("/api/**", config);
         source.registerCorsConfiguration("/**", config);
 

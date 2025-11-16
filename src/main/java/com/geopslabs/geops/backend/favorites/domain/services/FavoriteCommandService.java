@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.favorites.domain.services;
 
 import com.geopslabs.geops.backend.favorites.domain.model.aggregates.Favorite;
 import com.geopslabs.geops.backend.favorites.domain.model.commands.CreateFavoriteCommand;
+import com.geopslabs.geops.backend.favorites.domain.model.commands.DeleteFavoriteCommand;
 
 import java.util.Optional;
 
@@ -41,4 +42,16 @@ public interface FavoriteCommandService {
      * @throws IllegalArgumentException if the ID is invalid
      */
     boolean handleDelete(Long id);
+
+    /**
+     * Handles the deletion of a favorite by user ID and offer ID
+     *
+     * This method processes the deletion of a specific favorite relationship
+     * between a user and an offer. Useful for un-hearting an offer
+     *
+     * @param command The command containing userId and offerId
+     * @return true if the favorite was successfully deleted, false if not found
+     * @throws IllegalArgumentException if the command contains invalid data
+     */
+    boolean handleDelete(DeleteFavoriteCommand command);
 }

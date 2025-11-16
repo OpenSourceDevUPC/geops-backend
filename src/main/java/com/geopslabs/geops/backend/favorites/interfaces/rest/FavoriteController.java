@@ -5,8 +5,10 @@ import com.geopslabs.geops.backend.favorites.domain.model.queries.GetFavoritesBy
 import com.geopslabs.geops.backend.favorites.domain.services.FavoriteCommandService;
 import com.geopslabs.geops.backend.favorites.domain.services.FavoriteQueryService;
 import com.geopslabs.geops.backend.favorites.interfaces.rest.resources.CreateFavoriteResource;
+import com.geopslabs.geops.backend.favorites.interfaces.rest.resources.DeleteFavoriteResource;
 import com.geopslabs.geops.backend.favorites.interfaces.rest.resources.FavoriteResource;
 import com.geopslabs.geops.backend.favorites.interfaces.rest.transform.CreateFavoriteCommandFromResourceAssembler;
+import com.geopslabs.geops.backend.favorites.interfaces.rest.transform.DeleteFavoriteCommandFromResourceAssembler;
 import com.geopslabs.geops.backend.favorites.interfaces.rest.transform.FavoriteResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -127,7 +129,7 @@ public class FavoriteController {
      * @param id The unique identifier of the favorite to delete
      * @return ResponseEntity with no content or error status
      */
-    @Operation(summary = "Delete favorite")
+    @Operation(summary = "Delete favorite by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Favorite deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Favorite not found"),
@@ -138,6 +140,31 @@ public class FavoriteController {
             @Parameter(description = "Favorite unique identifier") @PathVariable Long id) {
 
         boolean deleted = favoriteCommandService.handleDelete(id);
+
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Deletes a favorite by userId and offerId
+     * This endpoint is useful for the frontend when un-hearting an offer
+     *
+     * @param resource The delete favorite resource containing userId and offerId
+     * @return ResponseEntity with no content or error status
+     */
+    @Operation(summary = "Delete favorite by userId and offerId")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Favorite deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Favorite not found"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
+    @DeleteMapping
+    public ResponseEntity<Void> deleteByUserIdAndOfferId(@RequestBody DeleteFavoriteResource resource) {
+        var command = DeleteFavoriteCommandFromResourceAssembler.toCommandFromResource(resource);
+        boolean deleted = favoriteCommandService.handleDelete(command);
 
         if (!deleted) {
             return ResponseEntity.notFound().build();

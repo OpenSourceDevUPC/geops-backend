@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.favorites.application.internal.commandservic
 
 import com.geopslabs.geops.backend.favorites.domain.model.aggregates.Favorite;
 import com.geopslabs.geops.backend.favorites.domain.model.commands.CreateFavoriteCommand;
+import com.geopslabs.geops.backend.favorites.domain.model.commands.DeleteFavoriteCommand;
 import com.geopslabs.geops.backend.favorites.domain.services.FavoriteCommandService;
 import com.geopslabs.geops.backend.favorites.infrastructure.persistence.jpa.FavoriteRepository;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,40 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
         } catch (Exception e) {
             // Log the error with full stacktrace
             System.err.println("Error deleting favorite: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean handleDelete(DeleteFavoriteCommand command) {
+        try {
+            // First check if favorite exists
+            boolean exists = favoriteRepository.existsByUserIdAndOfferId(
+                    command.userId(),
+                    command.offerId()
+            );
+
+            if (!exists) {
+                System.err.println("Favorite not found for userId: " +
+                        command.userId() + " and offerId: " + command.offerId());
+                return false;
+            }
+
+            // Delete the favorite by userId and offerId
+            long deletedCount = favoriteRepository.deleteByUserIdAndOfferId(
+                    command.userId(),
+                    command.offerId()
+            );
+
+            return deletedCount > 0;
+
+        } catch (Exception e) {
+            // Log the error with full stacktrace
+            System.err.println("Error deleting favorite by userId and offerId: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

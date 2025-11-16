@@ -30,7 +30,8 @@ public class SubscriptionResourceFromEntityAssembler {
         return new SubscriptionResource(
             entity.getId(),
             entity.getPrice(),
-            entity.getRecommended(),
+            // for primitive boolean the getter is 'isRecommended()'
+            entity.isRecommended(),
             entity.getType(),
             entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null,
             entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null

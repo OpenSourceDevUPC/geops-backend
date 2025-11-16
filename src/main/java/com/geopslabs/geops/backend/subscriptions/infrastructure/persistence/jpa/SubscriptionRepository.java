@@ -44,5 +44,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
      * @param recommended Whether to find recommended or non-recommended plans
      * @return A List of Subscription objects with the specified recommendation status
      */
-    List<Subscription> findByRecommended(Boolean recommended);
+    List<Subscription> findByRecommended(boolean recommended);
 }

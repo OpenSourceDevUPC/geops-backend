@@ -9,6 +9,7 @@ import com.geopslabs.geops.backend.subscriptions.interfaces.rest.resources.Creat
 import com.geopslabs.geops.backend.subscriptions.interfaces.rest.resources.SubscriptionResource;
 import com.geopslabs.geops.backend.subscriptions.interfaces.rest.transform.CreateSubscriptionCommandFromResourceAssembler;
 import com.geopslabs.geops.backend.subscriptions.interfaces.rest.transform.SubscriptionResourceFromEntityAssembler;
+import com.geopslabs.geops.backend.subscriptions.interfaces.rest.resources.UpdateSubscriptionResource;
 import com.geopslabs.geops.backend.subscriptions.domain.model.aggregates.Subscription.SubscriptionType;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.UpdateSubscriptionCommand;
 import io.swagger.v3.oas.annotations.Operation;
@@ -157,7 +158,7 @@ public class SubscriptionController {
     @PutMapping("/{id}")
     public ResponseEntity<SubscriptionResource> update(
             @Parameter(description = "Subscription unique identifier") @PathVariable String id,
-            @RequestBody CreateSubscriptionResource resource) {
+            @RequestBody UpdateSubscriptionResource resource) {
         try {
             Long subscriptionId = Long.parseLong(id);
 
@@ -171,7 +172,10 @@ public class SubscriptionController {
 
             // Create update command and handle it
             var updateCommand = new UpdateSubscriptionCommand(
-                subscriptionId, resource.price(), resource.recommended(), resource.type());
+                subscriptionId,
+                resource.price(),
+                resource.recommended(),
+                resource.type());
             var subscription = subscriptionCommandService.handle(updateCommand);
 
             if (subscription.isEmpty()) {

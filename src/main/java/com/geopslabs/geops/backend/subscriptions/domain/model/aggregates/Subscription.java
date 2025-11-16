@@ -32,10 +32,12 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
 
     /**
      * Whether this subscription plan is recommended
+     *
+     * Persist as numeric (TINYINT(1)) to avoid accidental string storage/truncation
      */
-    @Column(name = "recommended", nullable = false)
+    @Column(name = "recommended", nullable = false, columnDefinition = "TINYINT(1)")
     @Getter
-    private Boolean recommended;
+    private boolean recommended;
 
     /**
      * Type of subscription plan (BASIC or PREMIUM)
@@ -79,21 +81,12 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
     }
 
     /**
-     * Checks if this subscription is the recommended plan
-     *
-     * @return true if subscription is recommended, false otherwise
-     */
-    public boolean isRecommended() {
-        return this.recommended;
-    }
-
-    /**
      * Checks if this subscription is a premium plan
      *
      * @return true if subscription type is PREMIUM, false otherwise
      */
     public boolean isPremium() {
-        return this.type == SubscriptionType.PREMIUM;
+        return this.type == SubscriptionType.FREEMIUM;
     }
 
     /**
@@ -110,7 +103,7 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
      */
     public enum SubscriptionType {
         BASIC,
+        FREEMIUM,
         PREMIUM
     }
 }
-

@@ -2,7 +2,9 @@ package com.geopslabs.geops.backend.identity.interfaces.rest;
 
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByEmailQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByIdQuery;
+import com.geopslabs.geops.backend.identity.domain.model.commands.UpdateUserCommand;
 import com.geopslabs.geops.backend.identity.domain.services.UserQueryService;
+import com.geopslabs.geops.backend.identity.domain.services.UserCommandService;
 import com.geopslabs.geops.backend.identity.interfaces.rest.resources.UserResource;
 import com.geopslabs.geops.backend.identity.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,14 +33,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final UserQueryService userQueryService;
+    private final UserCommandService userCommandService;
 
     /**
      * Constructor for dependency injection
      *
      * @param userQueryService Service for handling user queries
+     * @param userCommandService Service for handling user commands (create/update/delete)
      */
-    public UserController(UserQueryService userQueryService) {
+    public UserController(UserQueryService userQueryService, UserCommandService userCommandService) {
         this.userQueryService = userQueryService;
+        this.userCommandService = userCommandService;
     }
 
     /**
@@ -103,5 +108,54 @@ public class UserController {
         var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
         return ResponseEntity.ok(userResource);
     }
-}
 
+    /**
+     * Update an existing user
+     *
+     * Receives the updated user representation in the request body and delegates
+     * the update operation to the command service. Returns the updated resource.
+     *
+     * The controller maps the incoming `UserResource` to an `UpdateUserCommand`
+     * which is the expected input of the `UserCommandService`.
+     *
+     * @param id The id of the user to update
+     * @param userResource The user data to update (in request body)
+     * @return ResponseEntity with updated user or not found
+     */
+    @Operation(summary = "Update user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User updated"),
+        @ApiResponse(responseCode = "404", description = "User not found"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
+    @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResource> updateUser(
+            @Parameter(description = "User unique identifier") @PathVariable Long id,
+            @RequestBody UserResource userResource) {
+
+        var query = new GetUserByIdQuery(id);
+        var existing = userQueryService.handle(query);
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Map incoming resource to domain command and delegate to service
+        var cmd = new UpdateUserCommand(
+            id,
+            userResource.name(),
+            userResource.email(),
+            userResource.role(),
+            userResource.plan()
+        );
+
+        var updatedOpt = userCommandService.handle(cmd);
+        if (updatedOpt.isEmpty()) {
+            // Service decided the update couldn't be performed
+            return ResponseEntity.notFound().build();
+        }
+
+        var saved = updatedOpt.get();
+        var resource = UserResourceFromEntityAssembler.toResourceFromEntity(saved);
+        return ResponseEntity.ok(resource);
+    }
+}

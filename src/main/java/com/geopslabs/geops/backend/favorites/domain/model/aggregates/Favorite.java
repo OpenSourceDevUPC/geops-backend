@@ -19,7 +19,12 @@ import lombok.Getter;
  * @author GeOps Labs
  */
 @Entity
-@Table(name = "favorites")
+@Table(name = "favorites",
+    uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+        name = "uk_user_offer",
+        columnNames = {"user_id", "offer_id"}
+    )
+)
 @Getter
 public class Favorite extends AuditableAbstractAggregateRoot<Favorite> {
 

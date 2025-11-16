@@ -62,5 +62,15 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @return The number of deleted favorites
      */
     long deleteByOfferId(String offerId);
+
+    /**
+     * Deletes a favorite by user ID and offer ID
+     * Useful for removing a specific favorite relationship
+     *
+     * @param userId The unique identifier of the user
+     * @param offerId The unique identifier of the offer
+     * @return The number of deleted favorites (0 or 1)
+     */
+    long deleteByUserIdAndOfferId(String userId, String offerId);
 }
 

@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.subscriptions.application.internal.commandse
 
 import com.geopslabs.geops.backend.subscriptions.domain.model.aggregates.Subscription;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.CreateSubscriptionCommand;
+import com.geopslabs.geops.backend.subscriptions.domain.model.commands.DeleteSubscriptionCommand;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.UpdateSubscriptionCommand;
 import com.geopslabs.geops.backend.subscriptions.domain.services.SubscriptionCommandService;
 import com.geopslabs.geops.backend.subscriptions.infrastructure.persistence.jpa.SubscriptionRepository;
@@ -92,6 +93,32 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
      * {@inheritDoc}
      */
     @Override
+    public boolean handle(DeleteSubscriptionCommand command) {
+        try {
+            // First check if subscription exists
+            var existingSubscriptionOpt = subscriptionRepository.findById(command.subscriptionId());
+
+            if (existingSubscriptionOpt.isEmpty()) {
+                return false;
+            }
+
+            // Delete the subscription
+            subscriptionRepository.deleteById(command.subscriptionId());
+
+            return true;
+
+        } catch (Exception e) {
+            // Log the error (in a real application, use proper logging framework)
+            System.err.println("Error deleting subscription plan: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Deprecated
     public boolean deleteSubscription(Long subscriptionId) {
         if (subscriptionId == null || subscriptionId <= 0) {
             throw new IllegalArgumentException("subscriptionId cannot be null or negative");

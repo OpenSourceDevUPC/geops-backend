@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.subscriptions.application.internal.queryserv
 
 import com.geopslabs.geops.backend.subscriptions.domain.model.aggregates.Subscription;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsByTypeQuery;
+import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetSubscriptionByIdQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetRecommendedSubscriptionsQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.services.SubscriptionQueryService;
@@ -50,6 +51,20 @@ public class SubscriptionQueryServiceImpl implements SubscriptionQueryService {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error retrieving subscription by ID: " + e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Subscription> handle(GetAllSubscriptionsQuery query) {
+        try {
+            return subscriptionRepository.findAll();
+        } catch (Exception e) {
+            // Log the error (in a real application, use proper logging framework)
+            System.err.println("Error retrieving all subscriptions: " + e.getMessage());
+            return List.of();
         }
     }
 

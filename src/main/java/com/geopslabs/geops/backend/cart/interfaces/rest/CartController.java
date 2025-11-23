@@ -1,15 +1,18 @@
 package com.geopslabs.geops.backend.cart.interfaces.rest;
 
 import com.geopslabs.geops.backend.cart.domain.model.aggregates.Cart;
-import com.geopslabs.geops.backend.cart.domain.model.aggregates.CartItem;
+import com.geopslabs.geops.backend.cart.domain.model.commands.*;
+import com.geopslabs.geops.backend.cart.domain.model.queries.*;
 import com.geopslabs.geops.backend.cart.domain.services.CartCommandService;
 import com.geopslabs.geops.backend.cart.domain.services.CartQueryService;
 import com.geopslabs.geops.backend.cart.interfaces.rest.resources.CartResource;
 import com.geopslabs.geops.backend.cart.interfaces.rest.resources.CartItemResource;
 import com.geopslabs.geops.backend.cart.interfaces.rest.resources.UpdateCartItemQuantityResource;
-import com.geopslabs.geops.backend.cart.interfaces.rest.transform.CartResourceFromEntityAssembler;
+import com.geopslabs.geops.backend.cart.interfaces.rest.transform.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +23,17 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Tag(name = "Cart", description = "Cart operations and management")
+/**
+ * CartController
+ *
+ * REST controller that handles HTTP requests related to shopping cart operations.
+ * This controller follows the CQRS pattern, separating command and query operations
+ *
+ * @summary REST API for cart management
+ * @since 1.0
+ * @author GeOps Labs
+ */
+@Tag(name = "Carts", description = "Cart operations and management")
 @RestController
 @RequestMapping(value = "/api/v1/carts", produces = APPLICATION_JSON_VALUE)
 public class CartController {
@@ -33,28 +46,48 @@ public class CartController {
         this.cartQueryService = cartQueryService;
     }
 
-    @Operation(summary = "Get all carts")
+    @Operation(summary = "Get all carts", description = "Retrieve all shopping carts in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all carts"),
+            @ApiResponse(responseCode = "404", description = "No carts found")
+    })
     @GetMapping
     public ResponseEntity<List<CartResource>> getAll() {
-        var carts = cartQueryService.getAllCarts();
-        var resources = carts.stream().map(CartResourceFromEntityAssembler::toResourceFromEntity).toList();
+        var query = new GetAllCartsQuery();
+        var carts = cartQueryService.handle(query);
+        if (carts.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = carts.stream()
+                .map(CartResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
         return ResponseEntity.ok(resources);
     }
 
-    @Operation(summary = "Get cart by id")
+    @Operation(summary = "Get cart by id", description = "Retrieve a specific cart by its unique identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the cart"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<CartResource> getById(@PathVariable Long id) {
-        var cartOpt = cartQueryService.getCartById(id);
+    public ResponseEntity<CartResource> getById(@Parameter(description = "Cart ID") @PathVariable Long id) {
+        var query = new GetCartByIdQuery(id);
+        var cartOpt = cartQueryService.handle(query);
         if (cartOpt.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(cartOpt.get()));
     }
 
-    @Operation(summary = "Get cart by user id")
+    @Operation(summary = "Get cart by user id", description = "Retrieve a user's shopping cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the cart")
+    })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<CartResource> getCartByUserId(@Parameter(description = "User ID") @PathVariable String userId) {
-        Optional<Cart> cartOpt = cartQueryService.getCartByUserId(userId);
+    public ResponseEntity<CartResource> getCartByUserId(
+            @Parameter(description = "User ID") @PathVariable String userId
+    ) {
+        var query = new GetCartByUserIdQuery(userId);
+        Optional<Cart> cartOpt = cartQueryService.handle(query);
+
         if (cartOpt.isEmpty()) {
-            // return empty cart resource
+            // Return empty cart resource
             Cart empty = new Cart(userId);
             var resource = CartResourceFromEntityAssembler.toResourceFromEntity(empty);
             return ResponseEntity.ok(resource);
@@ -64,88 +97,86 @@ public class CartController {
         return ResponseEntity.ok(resource);
     }
 
-    @Operation(summary = "Create cart for user")
+    @Operation(summary = "Create cart for user", description = "Create a new shopping cart for a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cart created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping
     public ResponseEntity<CartResource> createCartForUser(@RequestParam String userId) {
-        var created = cartCommandService.createCartForUser(userId);
+        var command = new CreateCartCommand(userId);
+        var created = cartCommandService.handle(command);
         if (created.isEmpty()) return ResponseEntity.badRequest().build();
-        return new ResponseEntity<>(CartResourceFromEntityAssembler.toResourceFromEntity(created.get()), CREATED);
+        return new ResponseEntity<>(
+                CartResourceFromEntityAssembler.toResourceFromEntity(created.get()),
+                CREATED
+        );
     }
 
-    @Operation(summary = "Update cart by id")
-    @PutMapping("/{id}")
-    public ResponseEntity<CartResource> updateById(@PathVariable Long id, @RequestBody CartResource resource) {
-        var cartOpt = cartQueryService.getCartById(id);
-        if (cartOpt.isEmpty()) return ResponseEntity.notFound().build();
-        var cart = cartOpt.get();
-        // naive mapping: replace items and totals from resource
-        cart.getItems().clear();
-        resource.items().forEach(ir -> cart.addItem(new CartItem(ir.userId(), ir.offerId(), ir.offerTitle(), ir.offerPrice(), ir.offerImageUrl(), ir.quantity())));
-        cart.recalculateTotals();
-        var saved = cartCommandService.saveCart(cart);
-        return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(saved));
-    }
-
-    @Operation(summary = "Delete cart by id")
+    @Operation(summary = "Delete cart by id", description = "Delete a cart by its unique identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Cart deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        boolean deleted = cartCommandService.deleteCart(id);
+    public ResponseEntity<Void> deleteById(@Parameter(description = "Cart ID") @PathVariable Long id) {
+        var command = new DeleteCartCommand(id);
+        boolean deleted = cartCommandService.handle(command);
         if (!deleted) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Add item to cart")
+    @Operation(summary = "Add item to cart", description = "Add an offer item to a user's shopping cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Item added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping("/user/{userId}/items")
-    public ResponseEntity<CartResource> addItemToCart(@PathVariable String userId, @RequestBody CartItemResource itemResource) {
-        var cartOpt = cartQueryService.getCartByUserId(userId);
-        Cart cart = cartOpt.orElseGet(() -> new Cart(userId));
-
-        CartItem item = new CartItem(itemResource.userId(), itemResource.offerId(), itemResource.offerTitle(), itemResource.offerPrice(), itemResource.offerImageUrl(), itemResource.quantity());
-        cart.addItem(item);
-
-        var saved = cartCommandService.saveCart(cart);
-        return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(saved));
+    public ResponseEntity<CartResource> addItemToCart(
+            @Parameter(description = "User ID") @PathVariable String userId,
+            @RequestBody CartItemResource itemResource
+    ) {
+        var command = AddItemToCartCommandFromResourceAssembler.toCommandFromResource(itemResource, userId);
+        var updated = cartCommandService.handle(command);
+        if (updated.isEmpty()) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(updated.get()));
     }
 
-    @Operation(summary = "Update cart item quantity")
+    @Operation(summary = "Update cart item quantity", description = "Update the quantity of an item in the cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quantity updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Cart or item not found")
+    })
     @PutMapping("/user/{userId}/items/{offerId}")
-    public ResponseEntity<CartResource> updateItemQuantity(@PathVariable String userId,
-                                                           @PathVariable String offerId,
-                                                           @RequestBody UpdateCartItemQuantityResource payload) {
+    public ResponseEntity<CartResource> updateItemQuantity(
+            @Parameter(description = "User ID") @PathVariable String userId,
+            @Parameter(description = "Offer ID") @PathVariable String offerId,
+            @RequestBody UpdateCartItemQuantityResource payload
+    ) {
         if (payload == null || payload.quantity() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        int quantity = payload.quantity();
+        var command = UpdateCartItemQuantityCommandFromResourceAssembler
+                .toCommandFromResource(payload, userId, offerId);
+        var updated = cartCommandService.handle(command);
 
-        var cartOpt = cartQueryService.getCartByUserId(userId);
-        if (cartOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        Cart cart = cartOpt.get();
-        var itemOpt = cart.getItems().stream().filter(i -> i.getOfferId().equals(offerId)).findFirst();
-        if (itemOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        var item = itemOpt.get();
-        if (quantity <= 0) {
-            cart.removeItem(item);
-        } else {
-            item.setQuantity(quantity);
-            cart.recalculateTotals();
-        }
-
-        var saved = cartCommandService.saveCart(cart);
-        return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(saved));
+        if (updated.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(CartResourceFromEntityAssembler.toResourceFromEntity(updated.get()));
     }
 
-    @Operation(summary = "Clear cart for user")
+    @Operation(summary = "Clear cart for user", description = "Remove all items from a user's cart")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Cart cleared successfully"),
+            @ApiResponse(responseCode = "404", description = "Cart not found")
+    })
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Void> clearCart(@PathVariable String userId) {
-        var cartOpt = cartQueryService.getCartByUserId(userId);
-        if (cartOpt.isEmpty()) return ResponseEntity.notFound().build();
-        var cart = cartOpt.get();
-        cart.getItems().clear();
-        cart.recalculateTotals();
-        cartCommandService.saveCart(cart);
+    public ResponseEntity<Void> clearCart(@Parameter(description = "User ID") @PathVariable String userId) {
+        var command = new ClearCartCommand(userId);
+        var cleared = cartCommandService.handle(command);
+        if (cleared.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
     }
 }
+

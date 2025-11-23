@@ -7,9 +7,13 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfiguration {
@@ -23,14 +27,16 @@ public class OpenApiConfiguration {
 
     @Value("${documentation.application.version}")
     String applicationVersion;
-
     //Methods
 
     @Bean
-    public OpenAPI learningPlatformOpenApi() {
+    public OpenAPI learningPlatformOpenApi(ServletContext servletContext) {
         //General configuration
         var openApi = new OpenAPI();
-        openApi
+
+        Server server = new Server().url(servletContext.getContextPath());
+
+        openApi.servers(List.of(server))
                 .info(new Info()
                         .title(this.applicationName)
                         .description(this.applicationDescription)
@@ -38,8 +44,8 @@ public class OpenApiConfiguration {
                         .license(new License().name("Apache 2.0")
                                 .url("https://springdoc.org")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("ACme Learning Platform wiki Documentation")
-                        .url("https://acme-learning-platform.wiki.github.io/docs"));
+                        .description("Geops Platform API Documentation")
+                        .url("https://github.com/OpenSourceDevUPC/geops-backend"));
 
         // Add a security scheme
 

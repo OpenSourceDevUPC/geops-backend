@@ -72,13 +72,28 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Create user with default role and plan
+        // Validate role (CONSUMER or OWNER)
+        String role = resource.role() != null && !resource.role().isBlank() ? resource.role() : "CONSUMER";
+        if (!role.equals("CONSUMER") && !role.equals("OWNER")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Validate and normalize plan (BASIC, PREMIUM, or FREEMIUM treated as PREMIUM)
+        String plan = resource.plan() != null && !resource.plan().isBlank() ? resource.plan() : "BASIC";
+        if (plan.equals("FREEMIUM")) {
+            plan = "PREMIUM"; // Treat FREEMIUM as PREMIUM
+        }
+        if (!plan.equals("BASIC") && !plan.equals("PREMIUM")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Create user with validated role and plan
         var createUserCommand = new CreateUserCommand(
             resource.name(),
             resource.email(),
             resource.password(), // In production, this should be hashed
-            "CONSUMER", // Default role
-            "FREEMIUM"  // Default plan
+            role,
+            plan
         );
 
         var userOptional = userCommandService.handle(createUserCommand);

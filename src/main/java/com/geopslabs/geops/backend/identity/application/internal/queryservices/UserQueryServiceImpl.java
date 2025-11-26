@@ -4,6 +4,7 @@ import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetAllUsersQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByEmailQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByIdQuery;
+import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByPhoneQuery;
 import com.geopslabs.geops.backend.identity.domain.services.UserQueryService;
 import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,19 @@ public class UserQueryServiceImpl implements UserQueryService {
             return userRepository.findByEmail(query.email());
         } catch (Exception e) {
             System.err.println("Error retrieving user by email: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<User> handle(GetUserByPhoneQuery query) {
+        try {
+            return userRepository.findByPhone(query.phone());
+        } catch (Exception e) {
+            System.err.println("Error retrieving user by phone: " + e.getMessage());
             return Optional.empty();
         }
     }

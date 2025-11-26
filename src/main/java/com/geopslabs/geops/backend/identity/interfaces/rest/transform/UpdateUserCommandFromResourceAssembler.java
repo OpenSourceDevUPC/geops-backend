@@ -31,6 +31,7 @@ public class UpdateUserCommandFromResourceAssembler {
             id,
             resource.name(),
             resource.email(),
+            resource.phone(),
             resource.role(),
             resource.plan()
         );

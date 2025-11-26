@@ -49,12 +49,18 @@ public class UserCommandServiceImpl implements UserCommandService {
                 return Optional.empty();
             }
 
+            // Check if user with phone already exists
+            if (userRepository.existsByPhone(command.phone())) {
+                System.err.println("User with phone " + command.phone() + " already exists");
+                return Optional.empty();
+            }
+
             // Create new user
             var user = new User(
                 command.name(),
                 command.email(),
-                command.password(),
                 command.phone(),
+                command.password(),
                 command.role(),
                 command.plan()
             );
@@ -92,10 +98,19 @@ public class UserCommandServiceImpl implements UserCommandService {
                 return Optional.empty();
             }
 
+            // Check if phone is being changed and if it already exists
+            if (command.phone() != null &&
+                !command.phone().equals(user.getPhone()) &&
+                userRepository.existsByPhone(command.phone())) {
+                System.err.println("Phone " + command.phone() + " is already in use");
+                return Optional.empty();
+            }
+
             // Update user information
             user.updateUser(
                 command.name(),
                 command.email(),
+                command.phone(),
                 command.role(),
                 command.plan()
             );

@@ -29,11 +29,27 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     /**
+     * Finds a user by their phone number
+     *
+     * @param phone The phone number to search for
+     * @return An Optional containing the user if found, empty otherwise
+     */
+    Optional<User> findByPhone(String phone);
+
+    /**
      * Checks if a user exists with the given email
      *
      * @param email The email address to check
      * @return true if a user exists with the email, false otherwise
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Checks if a user exists with the given phone number
+     *
+     * @param phone The phone number to check
+     * @return true if a user exists with the phone, false otherwise
+     */
+    boolean existsByPhone(String phone);
 }
 

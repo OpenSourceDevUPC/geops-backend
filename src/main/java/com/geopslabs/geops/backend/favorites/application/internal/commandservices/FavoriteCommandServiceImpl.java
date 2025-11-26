@@ -5,6 +5,7 @@ import com.geopslabs.geops.backend.favorites.domain.model.commands.CreateFavorit
 import com.geopslabs.geops.backend.favorites.domain.model.commands.DeleteFavoriteCommand;
 import com.geopslabs.geops.backend.favorites.domain.services.FavoriteCommandService;
 import com.geopslabs.geops.backend.favorites.infrastructure.persistence.jpa.FavoriteRepository;
+import com.geopslabs.geops.backend.notifications.application.internal.outboundservices.NotificationFactoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +27,20 @@ import java.util.Optional;
 public class FavoriteCommandServiceImpl implements FavoriteCommandService {
 
     private final FavoriteRepository favoriteRepository;
+    private final NotificationFactoryService notificationFactory;
 
     /**
      * Constructor for dependency injection
      *
      * @param favoriteRepository The repository for favorite data access
+     * @param notificationFactory Service to create notifications
      */
-    public FavoriteCommandServiceImpl(FavoriteRepository favoriteRepository) {
+    public FavoriteCommandServiceImpl(
+        FavoriteRepository favoriteRepository,
+        NotificationFactoryService notificationFactory
+    ) {
         this.favoriteRepository = favoriteRepository;
+        this.notificationFactory = notificationFactory;
     }
 
     /**
@@ -59,6 +66,13 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
 
             // Save the favorite to the repository
             var savedFavorite = favoriteRepository.save(favorite);
+
+            // Create notification for favorite added
+            notificationFactory.createFavoriteAddedNotification(
+                command.userId(),
+                command.offerId().toString(),
+                command.offerTitle() != null ? command.offerTitle() : "Oferta"
+            );
 
             return Optional.of(savedFavorite);
 

@@ -5,6 +5,7 @@ import com.geopslabs.geops.backend.payments.domain.model.commands.CreatePaymentC
 import com.geopslabs.geops.backend.payments.domain.model.commands.UpdatePaymentStatusCommand;
 import com.geopslabs.geops.backend.payments.domain.services.PaymentCommandService;
 import com.geopslabs.geops.backend.payments.infrastructure.persistence.jpa.PaymentRepository;
+import com.geopslabs.geops.backend.notifications.application.internal.outboundservices.NotificationFactoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +28,20 @@ import java.util.Optional;
 public class PaymentCommandServiceImpl implements PaymentCommandService {
 
     private final PaymentRepository paymentRepository;
+    private final NotificationFactoryService notificationFactory;
 
     /**
      * Constructor for dependency injection
      *
      * @param paymentRepository The repository for payment data access
+     * @param notificationFactory Service to create notifications
      */
-    public PaymentCommandServiceImpl(PaymentRepository paymentRepository) {
+    public PaymentCommandServiceImpl(
+        PaymentRepository paymentRepository,
+        NotificationFactoryService notificationFactory
+    ) {
         this.paymentRepository = paymentRepository;
+        this.notificationFactory = notificationFactory;
     }
 
     /**
@@ -120,6 +127,13 @@ public class PaymentCommandServiceImpl implements PaymentCommandService {
 
             // Save the completed payment
             var completedPayment = paymentRepository.save(existingPayment);
+
+            // Create notification for payment completion
+            notificationFactory.createPaymentNotification(
+                existingPayment.getUserId(),
+                paymentId.toString(),
+                existingPayment.getAmount()
+            );
 
             return Optional.of(completedPayment);
 

@@ -4,6 +4,9 @@ import com.geopslabs.geops.backend.reviews.domain.model.commands.CreateReviewCom
 import com.geopslabs.geops.backend.reviews.domain.model.commands.UpdateReviewCommand;
 import com.geopslabs.geops.backend.reviews.domain.services.ReviewCommandService;
 import com.geopslabs.geops.backend.reviews.infrastructure.persistence.jpa.ReviewRepository;
+import com.geopslabs.geops.backend.notifications.application.internal.outboundservices.NotificationFactoryService;
+import com.geopslabs.geops.backend.offers.domain.services.OfferQueryService;
+import com.geopslabs.geops.backend.offers.domain.model.queries.GetOfferByIdQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +28,24 @@ import java.util.Optional;
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     private final ReviewRepository reviewRepository;
+    private final NotificationFactoryService notificationFactory;
+    private final OfferQueryService offerQueryService;
 
     /**
      * Constructor for dependency injection
      *
      * @param reviewRepository The repository for review data access
+     * @param notificationFactory Service to create notifications
+     * @param offerQueryService Service to query offers
      */
-    public ReviewCommandServiceImpl(ReviewRepository reviewRepository) {
+    public ReviewCommandServiceImpl(
+        ReviewRepository reviewRepository,
+        NotificationFactoryService notificationFactory,
+        OfferQueryService offerQueryService
+    ) {
         this.reviewRepository = reviewRepository;
+        this.notificationFactory = notificationFactory;
+        this.offerQueryService = offerQueryService;
     }
 
     /**
@@ -46,6 +59,22 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
             // Save the review to the repository
             var savedReview = reviewRepository.save(review);
+
+            // Get offer details for notification
+            var offerQuery = new GetOfferByIdQuery(Long.parseLong(command.offerId()));
+            var offerOpt = offerQueryService.handle(offerQuery);
+            
+            if (offerOpt.isPresent()) {
+                var offer = offerOpt.get();
+                // Create notification for review comment
+                // For now, notify the user who created the review as confirmation
+                notificationFactory.createReviewCommentNotification(
+                    Long.parseLong(command.userId()),
+                    command.offerId(),
+                    offer.getTitle(),
+                    "Tú"
+                );
+            }
 
             return Optional.of(savedReview);
 

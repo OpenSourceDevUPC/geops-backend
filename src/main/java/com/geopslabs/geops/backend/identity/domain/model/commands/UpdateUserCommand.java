@@ -10,6 +10,7 @@ package com.geopslabs.geops.backend.identity.domain.model.commands;
  * @param id The unique identifier of the user to update
  * @param name The updated name (optional)
  * @param email The updated email (optional)
+ * @param phone The updated phone (optional)
  * @param role The updated role (optional)
  * @param plan The updated subscription plan (optional)
  *
@@ -20,6 +21,7 @@ public record UpdateUserCommand(
     Long id,
     String name,
     String email,
+    String phone,
     String role,
     String plan
 ) {

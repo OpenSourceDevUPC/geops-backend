@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest;
 
 import com.geopslabs.geops.backend.identity.domain.model.commands.CreateUserCommand;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByEmailQuery;
+import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByPhoneQuery;
 import com.geopslabs.geops.backend.identity.domain.services.UserCommandService;
 import com.geopslabs.geops.backend.identity.domain.services.UserQueryService;
 import com.geopslabs.geops.backend.identity.interfaces.rest.resources.AuthenticationResource;
@@ -68,28 +69,33 @@ public class AuthenticationController {
         if (resource.email() == null || resource.email().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
+        if (resource.phone() == null || resource.phone().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         if (resource.password() == null || resource.password().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Validate role (CONSUMER or OWNER)
-        String role = resource.role() != null && !resource.role().isBlank() ? resource.role() : "CONSUMER";
-        if (!role.equals("CONSUMER") && !role.equals("OWNER")) {
-            return ResponseEntity.badRequest().build();
+        // Check if email already exists
+        var emailQuery = new GetUserByEmailQuery(resource.email());
+        if (userQueryService.handle(emailQuery).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        // Validate plan (BASIC or PREMIUM)
-        String plan = resource.plan() != null && !resource.plan().isBlank() ? resource.plan() : "BASIC";
-        if (!plan.equals("BASIC") && !plan.equals("PREMIUM")) {
-            return ResponseEntity.badRequest().build();
+        // Check if phone already exists
+        var phoneQuery = new GetUserByPhoneQuery(resource.phone());
+        if (userQueryService.handle(phoneQuery).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+
+        // Create user with default role and plan
         var createUserCommand = new CreateUserCommand(
             resource.name(),
             resource.email(),
-            resource.password(), // In production, this should be hashed
             resource.phone(),
-            role,
-            plan
+            resource.password(), // In production, this should be hashed
+            "CONSUMER", // Default role
+            "FREEMIUM"  // Default plan
         );
 
         var userOptional = userCommandService.handle(createUserCommand);
@@ -103,6 +109,7 @@ public class AuthenticationController {
             user.getId(),
             user.getName(),
             user.getEmail(),
+            user.getPhone(),
             user.getRole(),
             user.getPlan(),
             "User registered successfully"
@@ -152,6 +159,7 @@ public class AuthenticationController {
             user.getId(),
             user.getName(),
             user.getEmail(),
+            user.getPhone(),
             user.getRole(),
             user.getPlan(),
             "User authenticated successfully"

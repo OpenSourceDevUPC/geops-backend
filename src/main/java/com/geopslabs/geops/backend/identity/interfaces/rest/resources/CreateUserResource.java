@@ -9,6 +9,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
  * @summary Request resource for creating a user
  * @param name The full name of the user
  * @param email The email address of the user
+ * @param phone The phone number of the user
  * @param password The password for authentication
  * @param role The role of the user in the system
  * @param plan The subscription plan of the user
@@ -19,11 +20,10 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 public record CreateUserResource(
     String name,
     String email,
-    String password,
     String phone,
+    String password,
     String role,
     String plan
 ) {
 }
-
 

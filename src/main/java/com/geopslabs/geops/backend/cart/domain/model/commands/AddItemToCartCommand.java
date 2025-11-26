@@ -18,8 +18,8 @@ package com.geopslabs.geops.backend.cart.domain.model.commands;
  * @author GeOps Labs
  */
 public record AddItemToCartCommand(
-        String userId,
-        String offerId,
+        Long userId,
+        Long offerId,
         String offerTitle,
         Double offerPrice,
         String offerImageUrl,
@@ -31,11 +31,11 @@ public record AddItemToCartCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public AddItemToCartCommand {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
         if (offerTitle == null || offerTitle.isBlank()) {
             throw new IllegalArgumentException("offerTitle cannot be null or empty");

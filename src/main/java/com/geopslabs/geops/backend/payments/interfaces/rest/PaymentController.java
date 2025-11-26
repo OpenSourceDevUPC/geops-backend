@@ -132,7 +132,7 @@ public class PaymentController {
     })
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PaymentResource>> getPaymentsByUserId(
-            @Parameter(description = "User unique identifier") @PathVariable String userId) {
+            @Parameter(description = "User unique identifier") @PathVariable Long userId) {
         var query = new GetAllPaymentsByUserIdQuery(userId);
         var payments = paymentQueryService.handle(query);
         var paymentResources = payments.stream()
@@ -272,7 +272,7 @@ public class PaymentController {
     })
     @GetMapping("/cart/{cartId}")
     public ResponseEntity<List<PaymentResource>> getPaymentsByCartId(
-            @Parameter(description = "Cart unique identifier") @PathVariable String cartId) {
+            @Parameter(description = "Cart unique identifier") @PathVariable Long cartId) {
         var payments = paymentQueryService.getPaymentsByCartId(cartId);
         var paymentResources = payments.stream()
                 .map(PaymentResourceFromEntityAssembler::toResourceFromEntity)
@@ -293,7 +293,7 @@ public class PaymentController {
     })
     @GetMapping("/cart/{cartId}/exists")
     public ResponseEntity<Boolean> existsPaymentByCartId(
-            @Parameter(description = "Cart unique identifier") @PathVariable String cartId) {
+            @Parameter(description = "Cart unique identifier") @PathVariable Long cartId) {
         var exists = paymentQueryService.existsPaymentByCartId(cartId);
         return ResponseEntity.ok(exists);
     }

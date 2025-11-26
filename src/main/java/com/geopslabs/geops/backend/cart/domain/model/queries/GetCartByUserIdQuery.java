@@ -12,15 +12,15 @@ package com.geopslabs.geops.backend.cart.domain.model.queries;
  * @since 1.0
  * @author GeOps Labs
  */
-public record GetCartByUserIdQuery(String userId) {
+public record GetCartByUserIdQuery(Long userId) {
     /**
      * Compact constructor that validates the query parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public GetCartByUserIdQuery {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
     }
 }

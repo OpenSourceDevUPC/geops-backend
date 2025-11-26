@@ -25,7 +25,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @param offerId The unique identifier of the offer
      * @return A List of Review objects for the specified offer
      */
-    List<Review> findByOfferId(String offerId);
+    List<Review> findByOffer_Id(Long offerId);
 
     /**
      * Finds all reviews by a specific user
@@ -33,7 +33,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @param userId The unique identifier of the user
      * @return A List of Review objects created by the specified user
      */
-    List<Review> findByUserId(String userId);
+    List<Review> findByUser_Id(Long userId);
 
     /**
      * Finds all reviews for an offer ordered by creation date (most recent first)
@@ -41,7 +41,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @param offerId The unique identifier of the offer
      * @return A List of Review objects ordered by creation date descending
      */
-    List<Review> findByOfferIdOrderByCreatedAtDesc(String offerId);
+    List<Review> findByOffer_IdOrderByCreatedAtDesc(Long offerId);
 
     /**
      * Finds all reviews for an offer ordered by likes (most liked first)
@@ -49,7 +49,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @param offerId The unique identifier of the offer
      * @return A List of Review objects ordered by likes descending
      */
-    List<Review> findByOfferIdOrderByLikesDesc(String offerId);
+    List<Review> findByOffer_IdOrderByLikesDesc(Long offerId);
 
     /**
      * Counts the total number of reviews for a specific offer.
@@ -57,5 +57,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @param offerId The unique identifier of the offer
      * @return The number of reviews for the offer
      */
-    long countByOfferId(String offerId);
+    long countByOffer_Id(Long offerId);
 }

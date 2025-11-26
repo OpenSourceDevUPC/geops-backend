@@ -25,8 +25,8 @@ public class UpdateCartItemQuantityCommandFromResourceAssembler {
      */
     public static UpdateCartItemQuantityCommand toCommandFromResource(
             UpdateCartItemQuantityResource resource,
-            String userId,
-            String offerId
+            Long userId,
+            Long offerId
     ) {
         return new UpdateCartItemQuantityCommand(
                 userId,

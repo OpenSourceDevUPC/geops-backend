@@ -122,11 +122,11 @@ public class ReviewController {
     @GetMapping
     public ResponseEntity<List<ReviewResource>> getReviews(
             @Parameter(description = "Optional offer ID to filter reviews")
-            @RequestParam(required = false) String offerId) {
+            @RequestParam(required = false) Long offerId) {
 
         List<ReviewResource> reviewResources;
 
-        if (offerId != null && !offerId.isBlank()) {
+        if (offerId != null) {
             // GET /reviews?offerId=1
             var query = new GetReviewsByOfferIdQuery(offerId);
             var reviews = reviewQueryService.handle(query);

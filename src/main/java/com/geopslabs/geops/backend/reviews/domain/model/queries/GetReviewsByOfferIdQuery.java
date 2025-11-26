@@ -13,14 +13,14 @@ package com.geopslabs.geops.backend.reviews.domain.model.queries;
  * @since 1.0
  * @author GeOps Labs
  */
-public record GetReviewsByOfferIdQuery(String offerId) {
+public record GetReviewsByOfferIdQuery(Long offerId) {
     /**
      * Compact constructor that validates the query parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public GetReviewsByOfferIdQuery {
-        if (offerId == null || offerId.isBlank()) {
+        if (offerId == null) {
             throw new IllegalArgumentException("offerId cannot be null or empty");
         }
     }

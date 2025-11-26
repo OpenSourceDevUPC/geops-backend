@@ -10,8 +10,8 @@ package com.geopslabs.geops.backend.reviews.interfaces.rest.resources;
  * @author GeOps Labs
  */
 public record CreateReviewResource(
-    String offerId,
-    String userId,
+    Long offerId,
+    Long userId,
     String userName,
     Integer rating,
     String text
@@ -22,12 +22,12 @@ public record CreateReviewResource(
      * @throws IllegalArgumentException if validation fails
      */
     public CreateReviewResource {
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
 
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
         if (userName == null || userName.isBlank()) {

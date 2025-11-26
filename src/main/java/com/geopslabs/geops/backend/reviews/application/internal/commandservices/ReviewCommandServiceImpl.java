@@ -1,9 +1,12 @@
 package com.geopslabs.geops.backend.reviews.application.internal.commandservices;
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
+import com.geopslabs.geops.backend.offers.infrastructure.persistence.jpa.OfferRepository;
 import com.geopslabs.geops.backend.reviews.domain.model.aggregates.Review;
 import com.geopslabs.geops.backend.reviews.domain.model.commands.CreateReviewCommand;
 import com.geopslabs.geops.backend.reviews.domain.model.commands.UpdateReviewCommand;
 import com.geopslabs.geops.backend.reviews.domain.services.ReviewCommandService;
 import com.geopslabs.geops.backend.reviews.infrastructure.persistence.jpa.ReviewRepository;
+import com.geopslabs.geops.backend.notifications.application.internal.outboundservices.NotificationFactoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +28,28 @@ import java.util.Optional;
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
+    private final NotificationFactoryService notificationFactory;
 
     /**
      * Constructor for dependency injection
      *
      * @param reviewRepository The repository for review data access
+     * @param userRepository The repository for user data access
+     * @param offerRepository The repository for offer data access
+     * @param notificationFactory Service to create notifications
      */
-    public ReviewCommandServiceImpl(ReviewRepository reviewRepository) {
+    public ReviewCommandServiceImpl(
+        ReviewRepository reviewRepository,
+        UserRepository userRepository,
+        OfferRepository offerRepository,
+        NotificationFactoryService notificationFactory
+    ) {
         this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.offerRepository = offerRepository;
+        this.notificationFactory = notificationFactory;
     }
 
     /**
@@ -41,11 +58,27 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
     @Override
     public Optional<Review> handle(CreateReviewCommand command) {
         try {
-            // Create new review from command
-            var review = new Review(command);
+            // Load User and Offer entities
+            var user = userRepository.findById(command.userId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + command.userId()));
+            
+            var offer = offerRepository.findById(command.offerId())
+                .orElseThrow(() -> new IllegalArgumentException("Offer not found with id: " + command.offerId()));
+
+            // Create review with entities
+            var review = new Review(command, user, offer);
 
             // Save the review to the repository
             var savedReview = reviewRepository.save(review);
+
+            // Create notification for review comment
+            // For now, notify the user who created the review as confirmation
+            notificationFactory.createReviewCommentNotification(
+                command.userId(),
+                command.offerId(),
+                offer.getTitle(),
+                "Tú"
+            );
 
             return Optional.of(savedReview);
 

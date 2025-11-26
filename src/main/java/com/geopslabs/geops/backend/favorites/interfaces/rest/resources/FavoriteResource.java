@@ -17,8 +17,8 @@ package com.geopslabs.geops.backend.favorites.interfaces.rest.resources;
  */
 public record FavoriteResource(
         Long id,
-        String userId,
-        String offerId,
+        Long userId,
+        Long offerId,
         String createdAt
 ) {
 }

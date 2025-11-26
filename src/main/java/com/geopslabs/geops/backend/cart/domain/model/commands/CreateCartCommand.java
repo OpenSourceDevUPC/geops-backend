@@ -12,15 +12,15 @@ package com.geopslabs.geops.backend.cart.domain.model.commands;
  * @since 1.0
  * @author GeOps Labs
  */
-public record CreateCartCommand(String userId) {
+public record CreateCartCommand(Long userId) {
     /**
      * Compact constructor that validates the command parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public CreateCartCommand {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
     }
 }

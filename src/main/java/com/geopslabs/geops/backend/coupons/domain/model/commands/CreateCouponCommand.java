@@ -20,8 +20,8 @@ package com.geopslabs.geops.backend.coupons.domain.model.commands;
  * @author GeOps Labs
  */
 public record CreateCouponCommand(
-    String userId,
-    String paymentId,
+    Long userId,
+    Long paymentId,
     String paymentCode,
     String productType,
     Long offerId,
@@ -34,11 +34,11 @@ public record CreateCouponCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public CreateCouponCommand {
-        if (userId == null || userId.isBlank()) {
+        if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
 
-        if (paymentId == null || paymentId.isBlank()) {
+        if (paymentId == null) {
             throw new IllegalArgumentException("paymentId cannot be null or empty");
         }
 

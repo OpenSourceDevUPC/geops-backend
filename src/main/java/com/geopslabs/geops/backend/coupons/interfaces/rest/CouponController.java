@@ -365,7 +365,7 @@ public class CouponController {
     })
     @GetMapping("/payment/{paymentId}")
     public ResponseEntity<List<CouponResource>> getCouponsByPayment(
-            @Parameter(description = "Payment unique identifier") @PathVariable String paymentId) {
+            @Parameter(description = "Payment unique identifier") @PathVariable Long paymentId) {
 
         var query = new GetCouponsByPaymentIdQuery(paymentId);
         var coupons = couponQueryService.handle(query);
@@ -418,7 +418,7 @@ public class CouponController {
     })
     @GetMapping("/user/{userId}/valid")
     public ResponseEntity<List<CouponResource>> getValidCouponsByUser(
-            @Parameter(description = "User unique identifier") @PathVariable String userId) {
+            @Parameter(description = "User unique identifier") @PathVariable Long userId) {
 
         var coupons = couponQueryService.getValidCouponsByUserId(userId);
 

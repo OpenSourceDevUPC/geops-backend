@@ -22,8 +22,8 @@ package com.geopslabs.geops.backend.reviews.interfaces.rest.resources;
  */
 public record ReviewResource(
     Long id,
-    String offerId,
-    String userId,
+    Long offerId,
+    Long userId,
     String userName,
     Integer rating,
     String text,

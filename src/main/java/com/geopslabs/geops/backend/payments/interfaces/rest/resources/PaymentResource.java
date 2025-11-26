@@ -18,7 +18,7 @@ import java.math.BigDecimal;
  * @param cartId The unique identifier of the cart that was purchased
  * @param amount The payment amount in the system's base currency
  * @param productType The type of product that was purchased
- * @param productId The ID of the purchased product
+ * @param offerId The ID of the offer that was purchased
  * @param paymentCodes JSON string containing generated codes per purchased item
  * @param paymentMethod The payment method used for this transaction
  * @param status The current status of the payment transaction
@@ -35,11 +35,11 @@ import java.math.BigDecimal;
  */
 public record PaymentResource(
     Long id,
-    String userId,
-    String cartId,
+    Long userId,
+    Long cartId,
     BigDecimal amount,
     String productType,
-    String productId,
+    Long offerId,
     String paymentCodes,
     PaymentMethod paymentMethod,
     PaymentStatus status,

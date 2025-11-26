@@ -33,7 +33,7 @@ public class PaymentResourceFromEntityAssembler {
             entity.getCartId(),
             entity.getAmount(),
             entity.getProductType(),
-            entity.getProductId(),
+            entity.getOfferId(),
             entity.getPaymentCodes(),
             entity.getPaymentMethod(),
             entity.getStatus(),

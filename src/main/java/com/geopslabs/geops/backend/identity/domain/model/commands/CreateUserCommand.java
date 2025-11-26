@@ -11,6 +11,7 @@ package com.geopslabs.geops.backend.identity.domain.model.commands;
  * @param name The full name of the user
  * @param email The email address of the user (unique identifier)
  * @param password The encrypted password for authentication
+ * @param phone The phone number of the user (optional)
  * @param role The role of the user in the system
  * @param plan The subscription plan of the user
  *
@@ -21,6 +22,7 @@ public record CreateUserCommand(
     String name,
     String email,
     String password,
+    String phone,
     String role,
     String plan
 ) {
@@ -45,6 +47,7 @@ public record CreateUserCommand(
         if (plan == null || plan.isBlank()) {
             throw new IllegalArgumentException("User plan cannot be null or empty");
         }
+        // phone is optional, no validation required
     }
 }
 

@@ -84,7 +84,7 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
      * @return true if subscription type is PREMIUM, false otherwise
      */
     public boolean isPremium() {
-        return this.type == SubscriptionType.FREEMIUM;
+        return this.type == SubscriptionType.PREMIUM;
     }
 
     /**
@@ -101,7 +101,6 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
      */
     public enum SubscriptionType {
         BASIC,
-        FREEMIUM,
         PREMIUM
     }
 }

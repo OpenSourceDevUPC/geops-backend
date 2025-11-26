@@ -139,13 +139,25 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
+        // Validate role if provided
+        String role = userResource.role();
+        if (role != null && !role.isBlank() && !role.equals("CONSUMER") && !role.equals("OWNER")) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        // Validate plan if provided
+        String plan = userResource.plan();
+        if (plan != null && !plan.isBlank() && !plan.equals("BASIC") && !plan.equals("PREMIUM")) {
+            return ResponseEntity.badRequest().build();
+        }
+
         // Map incoming resource to domain command and delegate to service
         var cmd = new UpdateUserCommand(
             id,
             userResource.name(),
             userResource.email(),
-            userResource.role(),
-            userResource.plan()
+            role,
+            plan
         );
 
         var updatedOpt = userCommandService.handle(cmd);

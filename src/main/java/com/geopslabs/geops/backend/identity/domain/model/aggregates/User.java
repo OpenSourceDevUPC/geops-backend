@@ -45,10 +45,16 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     private String role;
 
     /**
-     * Subscription plan of the user (e.g., FREEMIUM, PREMIUM)
+     * Subscription plan of the user (e.g., BASIC, PREMIUM)
      */
     @Column(name = "plan", nullable = false, length = 50)
     private String plan;
+
+    /**
+     * Phone number of the user (optional)
+     */
+    @Column(name = "phone", length = 20)
+    private String phone;
 
     /**
      * Default constructor for JPA
@@ -62,13 +68,15 @@ public class User extends AuditableAbstractAggregateRoot<User> {
      * @param name The user's full name
      * @param email The user's email address
      * @param password The user's encrypted password
+     * @param phone The user's phone number
      * @param role The user's role
      * @param plan The user's subscription plan
      */
-    public User(String name, String email, String password, String role, String plan) {
+    public User(String name, String email, String password, String phone, String role, String plan) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phone = phone;
         this.role = role;
         this.plan = plan;
     }

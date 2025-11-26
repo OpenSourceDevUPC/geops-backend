@@ -78,20 +78,16 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Validate and normalize plan (BASIC, PREMIUM, or FREEMIUM treated as PREMIUM)
+        // Validate plan (BASIC or PREMIUM)
         String plan = resource.plan() != null && !resource.plan().isBlank() ? resource.plan() : "BASIC";
-        if (plan.equals("FREEMIUM")) {
-            plan = "PREMIUM"; // Treat FREEMIUM as PREMIUM
-        }
         if (!plan.equals("BASIC") && !plan.equals("PREMIUM")) {
             return ResponseEntity.badRequest().build();
         }
-
-        // Create user with validated role and plan
         var createUserCommand = new CreateUserCommand(
             resource.name(),
             resource.email(),
             resource.password(), // In production, this should be hashed
+            resource.phone(),
             role,
             plan
         );

@@ -29,7 +29,7 @@ public class CreateUserCommandFromResourceAssembler {
         return new CreateUserCommand(
             resource.name(),
             resource.email(),
-            resource.password(),
+            resource.password(), resource.phone(),
             resource.role(),
             resource.plan()
         );

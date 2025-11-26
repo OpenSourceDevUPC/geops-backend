@@ -54,6 +54,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 command.name(),
                 command.email(),
                 command.password(),
+                command.phone(),
                 command.role(),
                 command.plan()
             );

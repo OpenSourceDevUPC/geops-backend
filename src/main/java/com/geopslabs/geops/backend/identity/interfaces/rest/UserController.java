@@ -139,12 +139,6 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        // Validate and normalize plan (treat FREEMIUM as PREMIUM)
-        String plan = userResource.plan();
-        if (plan != null && plan.equals("FREEMIUM")) {
-            plan = "PREMIUM";
-        }
-        
         // Validate role if provided
         String role = userResource.role();
         if (role != null && !role.isBlank() && !role.equals("CONSUMER") && !role.equals("OWNER")) {
@@ -152,6 +146,7 @@ public class UserController {
         }
         
         // Validate plan if provided
+        String plan = userResource.plan();
         if (plan != null && !plan.isBlank() && !plan.equals("BASIC") && !plan.equals("PREMIUM")) {
             return ResponseEntity.badRequest().build();
         }

@@ -5,7 +5,9 @@ import com.geopslabs.geops.backend.favorites.domain.model.commands.CreateFavorit
 import com.geopslabs.geops.backend.favorites.domain.model.commands.DeleteFavoriteCommand;
 import com.geopslabs.geops.backend.favorites.domain.services.FavoriteCommandService;
 import com.geopslabs.geops.backend.favorites.infrastructure.persistence.jpa.FavoriteRepository;
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
 import com.geopslabs.geops.backend.notifications.application.internal.outboundservices.NotificationFactoryService;
+import com.geopslabs.geops.backend.offers.infrastructure.persistence.jpa.OfferRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,19 +29,27 @@ import java.util.Optional;
 public class FavoriteCommandServiceImpl implements FavoriteCommandService {
 
     private final FavoriteRepository favoriteRepository;
+    private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
     private final NotificationFactoryService notificationFactory;
 
     /**
      * Constructor for dependency injection
      *
      * @param favoriteRepository The repository for favorite data access
+     * @param userRepository The repository for user data access
+     * @param offerRepository The repository for offer data access
      * @param notificationFactory Service to create notifications
      */
     public FavoriteCommandServiceImpl(
         FavoriteRepository favoriteRepository,
+        UserRepository userRepository,
+        OfferRepository offerRepository,
         NotificationFactoryService notificationFactory
     ) {
         this.favoriteRepository = favoriteRepository;
+        this.userRepository = userRepository;
+        this.offerRepository = offerRepository;
         this.notificationFactory = notificationFactory;
     }
 
@@ -50,7 +60,7 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
     public Optional<Favorite> handle(CreateFavoriteCommand command) {
         try {
             // Check if favorite already exists (prevent duplicates)
-            boolean exists = favoriteRepository.existsByUserIdAndOfferId(
+            boolean exists = favoriteRepository.existsByUser_IdAndOffer_Id(
                     command.userId(),
                     command.offerId()
             );
@@ -61,8 +71,24 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
                 return Optional.empty();
             }
 
-            // Create new favorite from command
-            var favorite = new Favorite(command);
+            // Fetch user entity
+            var userOptional = userRepository.findById(command.userId());
+            
+            if (userOptional.isEmpty()) {
+                System.err.println("User not found: " + command.userId());
+                return Optional.empty();
+            }
+
+            // Fetch offer entity
+            var offerOptional = offerRepository.findById(command.offerId());
+            
+            if (offerOptional.isEmpty()) {
+                System.err.println("Offer not found: " + command.offerId());
+                return Optional.empty();
+            }
+
+            // Create new favorite from command with user and offer entities
+            var favorite = new Favorite(command, userOptional.get(), offerOptional.get());
 
             // Save the favorite to the repository
             var savedFavorite = favoriteRepository.save(favorite);
@@ -71,7 +97,7 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
             notificationFactory.createFavoriteAddedNotification(
                 command.userId(),
                 command.offerId().toString(),
-                command.offerTitle() != null ? command.offerTitle() : "Oferta"
+                "Oferta"
             );
 
             return Optional.of(savedFavorite);
@@ -118,7 +144,7 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
     public boolean handleDelete(DeleteFavoriteCommand command) {
         try {
             // First check if favorite exists
-            boolean exists = favoriteRepository.existsByUserIdAndOfferId(
+            boolean exists = favoriteRepository.existsByUser_IdAndOffer_Id(
                     command.userId(),
                     command.offerId()
             );
@@ -130,7 +156,7 @@ public class FavoriteCommandServiceImpl implements FavoriteCommandService {
             }
 
             // Delete the favorite by userId and offerId
-            long deletedCount = favoriteRepository.deleteByUserIdAndOfferId(
+            long deletedCount = favoriteRepository.deleteByUser_IdAndOffer_Id(
                     command.userId(),
                     command.offerId()
             );

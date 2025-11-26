@@ -1,5 +1,8 @@
 package com.geopslabs.geops.backend.payments.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.cart.domain.model.aggregates.Cart;
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
+import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import com.geopslabs.geops.backend.payments.domain.model.commands.CreatePaymentCommand;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
@@ -19,22 +22,28 @@ import java.math.BigDecimal;
  * @author GeOps Labs
  */
 @Entity
-@Table(name = "payments")
+@Table(name = "payments", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_cart_id", columnList = "cart_id"),
+    @Index(name = "idx_status", columnList = "status")
+})
 public class Payment extends AuditableAbstractAggregateRoot<Payment> {
 
     /**
-     * User identifier who initiated the payment
+     * Reference to the user who initiated the payment
      */
-    @Column(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter
-    private String userId;
+    private User user;
 
     /**
-     * Cart identifier associated with this payment
+     * Reference to the cart associated with this payment
      */
-    @Column(name = "cart_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", nullable = false)
     @Getter
-    private String cartId;
+    private Cart cart;
 
     /**
      * Payment amount in the system's base currency
@@ -51,11 +60,12 @@ public class Payment extends AuditableAbstractAggregateRoot<Payment> {
     private String productType;
 
     /**
-     * ID of the purchased product in its respective table
+     * Reference to the offer being purchased
      */
-    @Column(name = "product_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "offer_id", nullable = true)
     @Getter
-    private String productId;
+    private Offer offer;
 
     /**
      * Generated payment codes for purchased items stored as JSON
@@ -124,13 +134,15 @@ public class Payment extends AuditableAbstractAggregateRoot<Payment> {
      * Creates a new Payment from a CreatePaymentCommand
      *
      * @param command The command containing payment creation data
+     * @param user The user entity reference
+     * @param cart The cart entity reference
+     * @param offer The offer entity reference (optional)
      */
-    public Payment(CreatePaymentCommand command) {
-        this.userId = command.userId();
-        this.cartId = command.cartId();
+    public Payment(CreatePaymentCommand command, User user, Cart cart, Offer offer) {
+        this.user = user;
+        this.cart = cart;
         this.amount = command.amount();
         this.productType = command.productType();
-        this.productId = command.productId();
         this.paymentCodes = command.paymentCodes();
         this.paymentMethod = command.paymentMethod();
         this.status = PaymentStatus.PENDING; // Default status
@@ -138,6 +150,33 @@ public class Payment extends AuditableAbstractAggregateRoot<Payment> {
         this.customerFirstName = command.customerFirstName();
         this.customerLastName = command.customerLastName();
         this.paymentCode = command.paymentCode();
+    }
+
+    /**
+     * Gets the user ID for this payment
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    /**
+     * Gets the cart ID for this payment
+     *
+     * @return The cart ID
+     */
+    public Long getCartId() {
+        return this.cart != null ? this.cart.getId() : null;
+    }
+
+    /**
+     * Gets the offer ID for this payment
+     *
+     * @return The offer ID
+     */
+    public Long getOfferId() {
+        return this.offer != null ? this.offer.getId() : null;
     }
 
     /**

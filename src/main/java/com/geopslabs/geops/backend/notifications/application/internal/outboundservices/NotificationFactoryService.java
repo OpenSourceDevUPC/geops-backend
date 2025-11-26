@@ -106,13 +106,13 @@ public class NotificationFactoryService {
     /**
      * Create notification for new review comment
      */
-    public void createReviewCommentNotification(Long userId, String offerId, String offerTitle, String reviewerName) {
+    public void createReviewCommentNotification(Long userId, Long offerId, String offerTitle, String reviewerName) {
         var command = new CreateNotificationCommand(
             userId,
             NotificationType.REVIEW_COMMENT,
             "Nuevo comentario en oferta",
             reviewerName + " ha comentado en \"" + offerTitle + "\"",
-            offerId,
+            offerId.toString(),
             "OFFER",
             "/ofertas/" + offerId
         );

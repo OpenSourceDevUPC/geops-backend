@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  * @param cartId The unique identifier of the cart being purchased
  * @param amount The payment amount in the system's base currency
  * @param productType The type of product being purchased (optional)
- * @param productId The ID of the purchased product (optional)
+ * @param offerId The ID of the offer being purchased (optional)
  * @param paymentCodes JSON string containing generated codes per purchased item (optional)
  * @param paymentMethod The payment method used for this transaction
  * @param customerEmail The customer's email address
@@ -28,11 +28,11 @@ import java.math.BigDecimal;
  * @author GeOps Labs
  */
 public record CreatePaymentCommand(
-    String userId,
-    String cartId,
+    Long userId,
+    Long cartId,
     BigDecimal amount,
     String productType,
-    String productId,
+    Long offerId,
     String paymentCodes,
     PaymentMethod paymentMethod,
     String customerEmail,
@@ -46,11 +46,11 @@ public record CreatePaymentCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public CreatePaymentCommand {
-        if (userId == null || userId.isBlank()) {
+        if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
 
-        if (cartId == null || cartId.isBlank()) {
+        if (cartId == null) {
             throw new IllegalArgumentException("cartId cannot be null or empty");
         }
 

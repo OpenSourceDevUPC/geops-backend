@@ -17,8 +17,8 @@ package com.geopslabs.geops.backend.reviews.domain.model.commands;
  * @author GeOps Labs
  */
 public record CreateReviewCommand(
-        String offerId,
-        String userId,
+        Long offerId,
+        Long userId,
         String userName,
         Integer rating,
         String text
@@ -29,12 +29,12 @@ public record CreateReviewCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public CreateReviewCommand {
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
 
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
         if (userName == null || userName.isBlank()) {

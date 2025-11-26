@@ -55,7 +55,7 @@ public class CouponExpirationNotificationService {
                         if (expiresAt.isAfter(now) && expiresAt.isBefore(threeDaysFromNow)) {
                             // Create notification
                             notificationFactory.createCouponExpirationNotification(
-                                Long.parseLong(coupon.getUserId()),
+                                coupon.getUserId(),
                                 coupon.getId().toString(),
                                 coupon.getCode()
                             );

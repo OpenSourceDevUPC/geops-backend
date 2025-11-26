@@ -5,6 +5,8 @@ import com.geopslabs.geops.backend.cart.domain.model.aggregates.CartItem;
 import com.geopslabs.geops.backend.cart.domain.model.commands.*;
 import com.geopslabs.geops.backend.cart.domain.services.CartCommandService;
 import com.geopslabs.geops.backend.cart.infrastructure.persistence.jpa.CartRepository;
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
+import com.geopslabs.geops.backend.offers.infrastructure.persistence.jpa.OfferRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +28,27 @@ import java.util.Optional;
 public class CartCommandServiceImpl implements CartCommandService {
 
     private final CartRepository cartRepository;
+    private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
 
-    public CartCommandServiceImpl(CartRepository cartRepository) {
+    public CartCommandServiceImpl(CartRepository cartRepository,
+                                  UserRepository userRepository,
+                                  OfferRepository offerRepository) {
         this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
+        this.offerRepository = offerRepository;
     }
 
     @Override
     public Optional<Cart> handle(CreateCartCommand command) {
         try {
-            Cart cart = new Cart(command.userId());
+            var userOptional = userRepository.findById(command.userId());
+            if (userOptional.isEmpty()) {
+                System.err.println("User not found: " + command.userId());
+                return Optional.empty();
+            }
+
+            Cart cart = new Cart(userOptional.get());
             var saved = cartRepository.save(cart);
             return Optional.of(saved);
         } catch (Exception e) {
@@ -47,12 +61,25 @@ public class CartCommandServiceImpl implements CartCommandService {
     @Override
     public Optional<Cart> handle(AddItemToCartCommand command) {
         try {
-            var cartOpt = cartRepository.findByUserId(command.userId());
-            Cart cart = cartOpt.orElseGet(() -> new Cart(command.userId()));
+            // Load user and offer entities
+            var userOptional = userRepository.findById(command.userId());
+            var offerOptional = offerRepository.findById(command.offerId());
+
+            if (userOptional.isEmpty()) {
+                System.err.println("User not found: " + command.userId());
+                return Optional.empty();
+            }
+            if (offerOptional.isEmpty()) {
+                System.err.println("Offer not found: " + command.offerId());
+                return Optional.empty();
+            }
+
+            var cartOpt = cartRepository.findByUser_Id(command.userId());
+            Cart cart = cartOpt.orElseGet(() -> new Cart(userOptional.get()));
 
             CartItem item = new CartItem(
-                    command.userId(),
-                    command.offerId(),
+                    userOptional.get(),
+                    offerOptional.get(),
                     command.offerTitle(),
                     command.offerPrice(),
                     command.offerImageUrl(),
@@ -72,7 +99,7 @@ public class CartCommandServiceImpl implements CartCommandService {
     @Override
     public Optional<Cart> handle(UpdateCartItemQuantityCommand command) {
         try {
-            var cartOpt = cartRepository.findByUserId(command.userId());
+            var cartOpt = cartRepository.findByUser_Id(command.userId());
             if (cartOpt.isEmpty()) return Optional.empty();
 
             Cart cart = cartOpt.get();
@@ -102,7 +129,7 @@ public class CartCommandServiceImpl implements CartCommandService {
     @Override
     public Optional<Cart> handle(ClearCartCommand command) {
         try {
-            var cartOpt = cartRepository.findByUserId(command.userId());
+            var cartOpt = cartRepository.findByUser_Id(command.userId());
             if (cartOpt.isEmpty()) return Optional.empty();
 
             var cart = cartOpt.get();

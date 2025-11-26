@@ -22,7 +22,7 @@ public class AddItemToCartCommandFromResourceAssembler {
      * @param userId The user ID
      * @return The AddItemToCartCommand
      */
-    public static AddItemToCartCommand toCommandFromResource(CartItemResource resource, String userId) {
+    public static AddItemToCartCommand toCommandFromResource(CartItemResource resource, Long userId) {
         return new AddItemToCartCommand(
                 userId,
                 resource.offerId(),

@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.notifications.application.internal.commandservices;
 
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
 import com.geopslabs.geops.backend.notifications.domain.model.aggregates.Notification;
 import com.geopslabs.geops.backend.notifications.domain.model.commands.CreateNotificationCommand;
 import com.geopslabs.geops.backend.notifications.domain.model.commands.DeleteNotificationCommand;
@@ -25,15 +26,25 @@ import java.util.Optional;
 public class NotificationCommandServiceImpl implements NotificationCommandService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
-    public NotificationCommandServiceImpl(NotificationRepository notificationRepository) {
+    public NotificationCommandServiceImpl(NotificationRepository notificationRepository,
+                                          UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Optional<Notification> handle(CreateNotificationCommand command) {
         try {
-            var notification = new Notification(command);
+            var userOptional = userRepository.findById(command.userId());
+            
+            if (userOptional.isEmpty()) {
+                System.err.println("User with ID " + command.userId() + " not found");
+                return Optional.empty();
+            }
+
+            var notification = new Notification(command, userOptional.get());
             var savedNotification = notificationRepository.save(notification);
             return Optional.of(savedNotification);
         } catch (Exception e) {

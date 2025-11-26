@@ -7,7 +7,7 @@ import java.util.List;
  */
 public record CartResource(
     Long id,
-    String userId,
+    Long userId,
     List<CartItemResource> items,
     Integer totalItems,
     Double totalAmount,

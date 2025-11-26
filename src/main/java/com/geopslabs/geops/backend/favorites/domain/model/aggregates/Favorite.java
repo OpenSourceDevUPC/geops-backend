@@ -1,10 +1,10 @@
 package com.geopslabs.geops.backend.favorites.domain.model.aggregates;
 
 import com.geopslabs.geops.backend.favorites.domain.model.commands.CreateFavoriteCommand;
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
+import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 /**
@@ -20,25 +20,31 @@ import lombok.Getter;
  */
 @Entity
 @Table(name = "favorites",
-    uniqueConstraints = @jakarta.persistence.UniqueConstraint(
+    uniqueConstraints = @UniqueConstraint(
         name = "uk_user_offer",
         columnNames = {"user_id", "offer_id"}
-    )
+    ),
+    indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_offer_id", columnList = "offer_id")
+    }
 )
 @Getter
 public class Favorite extends AuditableAbstractAggregateRoot<Favorite> {
 
     /**
-     * User identifier who favorites the offer
+     * Reference to the user who favorites the offer
      */
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     /**
-     * Offer identifier that was favorites
+     * Reference to the offer that was favorited
      */
-    @Column(name = "offer_id", nullable = false)
-    private String offerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "offer_id", nullable = false)
+    private Offer offer;
 
     /**
      * Default constructor for JPA
@@ -49,10 +55,30 @@ public class Favorite extends AuditableAbstractAggregateRoot<Favorite> {
      * Creates a new Favorite from a CreateFavoriteCommand
      *
      * @param command The command containing favorite creation data
+     * @param user The user entity reference
+     * @param offer The offer entity reference
      */
-    public Favorite(CreateFavoriteCommand command) {
-        this.userId = command.userId();
-        this.offerId = command.offerId();
+    public Favorite(CreateFavoriteCommand command, User user, Offer offer) {
+        this.user = user;
+        this.offer = offer;
+    }
+
+    /**
+     * Gets the user ID for this favorite
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    /**
+     * Gets the offer ID for this favorite
+     *
+     * @return The offer ID
+     */
+    public Long getOfferId() {
+        return this.offer != null ? this.offer.getId() : null;
     }
 
     /**
@@ -61,8 +87,8 @@ public class Favorite extends AuditableAbstractAggregateRoot<Favorite> {
      * @param userId The user ID to check.
      * @return true if the favorite belongs to the user, false otherwise
      */
-    public boolean belongsToUser(String userId) {
-        return this.userId != null && this.userId.equals(userId);
+    public boolean belongsToUser(Long userId) {
+        return this.user != null && this.user.getId().equals(userId);
     }
 
     /**
@@ -71,7 +97,7 @@ public class Favorite extends AuditableAbstractAggregateRoot<Favorite> {
      * @param offerId The offer ID to check
      * @return true if the favorite is for the offer, false otherwise
      */
-    public boolean isForOffer(String offerId) {
-        return this.offerId != null && this.offerId.equals(offerId);
+    public boolean isForOffer(Long offerId) {
+        return this.offer != null && this.offer.getId().equals(offerId);
     }
 }

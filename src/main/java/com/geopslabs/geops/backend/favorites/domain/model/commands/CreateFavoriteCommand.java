@@ -16,8 +16,8 @@ package com.geopslabs.geops.backend.favorites.domain.model.commands;
  */
 
 public record CreateFavoriteCommand(
-    String userId,
-    String offerId
+        Long userId,
+        Long offerId
 ) {
     /**
      * Compact constructor that validates the command parameters
@@ -25,11 +25,11 @@ public record CreateFavoriteCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public CreateFavoriteCommand {
-        if (userId == null || userId.isBlank()) {
+        if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
 
-        if (offerId == null || offerId.isBlank()) {
+        if (offerId == null) {
             throw new IllegalArgumentException("offerId cannot be null or empty");
         }
     }

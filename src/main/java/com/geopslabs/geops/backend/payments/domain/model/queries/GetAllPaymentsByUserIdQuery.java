@@ -13,15 +13,15 @@ package com.geopslabs.geops.backend.payments.domain.model.queries;
  * @since 1.0
  * @author GeOps Labs
  */
-public record GetAllPaymentsByUserIdQuery(String userId) {
+public record GetAllPaymentsByUserIdQuery(Long userId) {
     /**
      * Compact constructor that validates the query parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public GetAllPaymentsByUserIdQuery {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
     }
 }

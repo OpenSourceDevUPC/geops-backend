@@ -28,8 +28,8 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.OfferResourc
  */
 public record CouponResource(
     Long id,
-    String userId,
-    String paymentId,
+    Long userId,
+    Long paymentId,
     String paymentCode,
     String productType,
     Long offerId,

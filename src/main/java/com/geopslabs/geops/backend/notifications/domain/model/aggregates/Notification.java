@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.notifications.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.notifications.domain.model.commands.CreateNotificationCommand;
 import com.geopslabs.geops.backend.notifications.domain.model.valueObjects.NotificationType;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -18,15 +19,20 @@ import lombok.Getter;
  * @author GeOps Labs
  */
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_is_read", columnList = "is_read"),
+    @Index(name = "idx_created_at", columnList = "created_at")
+})
 @Getter
 public class Notification extends AuditableAbstractAggregateRoot<Notification> {
 
     /**
-     * User identifier who owns this notification
+     * Reference to the user who owns this notification
      */
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     /**
      * Notification type (PAYMENT, PREMIUM_UPGRADE, PROFILE_UPDATE, FAVORITE, COUPON_EXPIRATION, REVIEW_COMMENT)
@@ -80,9 +86,10 @@ public class Notification extends AuditableAbstractAggregateRoot<Notification> {
      * Creates a new Notification from a CreateNotificationCommand
      *
      * @param command The command containing notification creation data
+     * @param user The user entity reference
      */
-    public Notification(CreateNotificationCommand command) {
-        this.userId = command.userId();
+    public Notification(CreateNotificationCommand command, User user) {
+        this.user = user;
         this.type = command.type();
         this.title = command.title();
         this.message = command.message();
@@ -90,6 +97,15 @@ public class Notification extends AuditableAbstractAggregateRoot<Notification> {
         this.relatedEntityId = command.relatedEntityId();
         this.relatedEntityType = command.relatedEntityType();
         this.actionUrl = command.actionUrl();
+    }
+
+    /**
+     * Gets the user ID for this notification
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
     }
 
     /**

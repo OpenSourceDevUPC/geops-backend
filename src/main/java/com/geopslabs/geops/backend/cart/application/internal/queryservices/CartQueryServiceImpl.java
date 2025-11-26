@@ -33,7 +33,7 @@ public class CartQueryServiceImpl implements CartQueryService {
 
     @Override
     public Optional<Cart> handle(GetCartByUserIdQuery query) {
-        return cartRepository.findByUserId(query.userId());
+        return cartRepository.findByUser_Id(query.userId());
     }
 
     @Override

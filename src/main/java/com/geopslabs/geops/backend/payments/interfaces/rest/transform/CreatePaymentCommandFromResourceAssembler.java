@@ -33,7 +33,7 @@ public class CreatePaymentCommandFromResourceAssembler {
             resource.cartId(),
             resource.amount(),
             resource.productType(),
-            resource.productId(),
+            resource.offerId(),
             resource.paymentCodes(),
             resource.paymentMethod(),
             resource.customerEmail(),

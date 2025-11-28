@@ -54,7 +54,7 @@ public class AuthenticationController {
      * @param resource The sign-up request containing user registration data
      * @return ResponseEntity containing the authentication data or error status
      */
-    @Operation(summary = "Register a new user", description = "Creates a new user account with default role and plan")
+    @Operation(summary = "Register a new user", description = "Creates a new user account with specified role and plan (defaults: CONSUMER role, BASIC plan)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "User registered successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -88,14 +88,22 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        // Create user with default role and plan
+        // Use role and plan from request, or default values if not provided
+        String role = (resource.role() != null && !resource.role().isBlank())
+            ? resource.role()
+            : "CONSUMER";
+        String plan = (resource.plan() != null && !resource.plan().isBlank())
+            ? resource.plan()
+            : "BASIC";
+
+        // Create user with provided or default role and plan
         var createUserCommand = new CreateUserCommand(
             resource.name(),
             resource.email(),
             resource.phone(),
             resource.password(), // In production, this should be hashed
-            "CONSUMER", // Default role
-            "FREEMIUM"  // Default plan
+            role,
+            plan
         );
 
         var userOptional = userCommandService.handle(createUserCommand);

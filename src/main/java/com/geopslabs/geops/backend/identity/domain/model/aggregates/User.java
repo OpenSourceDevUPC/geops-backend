@@ -51,7 +51,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     private String role;
 
     /**
-     * Subscription plan of the user (e.g., FREEMIUM, PREMIUM)
+     * Subscription plan of the user (e.g., BASIC, PREMIUM)
      */
     @Column(name = "plan", nullable = false, length = 50)
     private String plan;

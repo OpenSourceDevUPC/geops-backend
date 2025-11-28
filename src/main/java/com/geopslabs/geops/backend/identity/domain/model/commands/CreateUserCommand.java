@@ -13,7 +13,7 @@ package com.geopslabs.geops.backend.identity.domain.model.commands;
  * @param phone The phone number of the user (unique identifier)
  * @param password The encrypted password for authentication
  * @param role The role of the user in the system (CONSUMER or SUPPLIER)
- * @param plan The subscription plan of the user (FREEMIUM or PREMIUM)
+ * @param plan The subscription plan of the user (BASIC or PREMIUM)
  *
  * @since 1.0
  * @author GeOps Labs

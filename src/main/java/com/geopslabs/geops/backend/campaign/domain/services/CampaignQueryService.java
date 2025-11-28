@@ -16,7 +16,5 @@ public interface CampaignQueryService {
 
     Optional<Campaign> handle(GetCampaignByIdQuery query);
 
-    Optional<List<CampaignOffer>> handle(GetAllCampaignOffersByCampaignIdQuery query);
-
     Optional<List<Campaign>> handle(GetAllCampaignsQuery query);
 }

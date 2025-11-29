@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.campaign.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.campaign.domain.model.commands.CreateCampaignCommand;
 import com.geopslabs.geops.backend.campaign.domain.model.valueobjects.ECampaignStatus;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
@@ -46,5 +47,15 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
 
     public Campaign(){}
 
-
+    public Campaign(CreateCampaignCommand command) {
+        this.name = command.name();
+        this.description = command.description();
+        this.startDate = command.startDate();
+        this.endDate = command.endDate();
+        this.status = ECampaignStatus.ACTIVE;
+        this.estimatedBudget = 0;
+        this.totalImpressions = 0L;
+        this.totalClicks = 0L;
+        this.CTR = 0;
+    }
 }

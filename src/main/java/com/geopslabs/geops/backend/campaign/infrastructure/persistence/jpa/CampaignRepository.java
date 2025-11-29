@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Optional<Campaign> findCampaignById(Long id);
 
+    void deleteCampaignById(Long id);
 }

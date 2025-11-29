@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Campaign entity for Campaign bounding context
@@ -57,5 +56,13 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
         this.totalImpressions = 0L;
         this.totalClicks = 0L;
         this.CTR = 0;
+    }
+
+    public void edit(String name, String description, LocalDate startDate, LocalDate endDate, ECampaignStatus status) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
     }
 }

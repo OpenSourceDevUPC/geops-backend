@@ -13,4 +13,20 @@ import java.time.LocalDate;
  * @see Campaign
  */
 public record CreateCampaignCommand(String name, String description, LocalDate startDate, LocalDate endDate) {
+    public CreateCampaignCommand {
+        if(name == null || name.isBlank())
+            throw new IllegalArgumentException("Campaign name cannot be null or blank");
+
+        if(description == null || description.isBlank())
+            throw new IllegalArgumentException("Campaign description cannot be null or blank");
+
+        if(startDate == null)
+            throw new IllegalArgumentException("Start date cannot be null");
+
+        if(endDate == null)
+            throw new IllegalArgumentException("End date cannot be null");
+
+        if(endDate.isBefore(startDate))
+            throw new IllegalArgumentException("End date cannot be before start date");
+    }
 }

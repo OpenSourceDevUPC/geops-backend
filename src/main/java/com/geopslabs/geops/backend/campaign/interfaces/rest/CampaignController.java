@@ -1,6 +1,7 @@
 package com.geopslabs.geops.backend.campaign.interfaces.rest;
 
 import com.geopslabs.geops.backend.campaign.domain.model.commands.DeleteCampaignCommand;
+import com.geopslabs.geops.backend.campaign.domain.model.queries.GetAllCampaignsByUserIdQuery;
 import com.geopslabs.geops.backend.campaign.domain.model.queries.GetAllCampaignsQuery;
 import com.geopslabs.geops.backend.campaign.domain.model.queries.GetCampaignByIdQuery;
 import com.geopslabs.geops.backend.campaign.domain.services.CampaignCommandService;
@@ -77,6 +78,17 @@ public class CampaignController {
         if (campaign.isEmpty()) return ResponseEntity.notFound().build();
         var campaignResource = CampaignResourceFromEntityAssembler.toResourceFromEntity(campaign.get());
         return ResponseEntity.ok(campaignResource);
+    }
+
+    @GetMapping("/user/{userId}/campaigns")
+    public ResponseEntity<List<CampaignResource>> getCampaignsByUserId(
+            @Parameter(description = "User unique identifier") @PathVariable Long userId)
+    {
+        var campaigns = campaignQueryService.handle(new GetAllCampaignsByUserIdQuery(userId));
+        var campaignResources = campaigns.stream()
+                .map(CampaignResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(campaignResources);
     }
 
     @PatchMapping("/{id}")

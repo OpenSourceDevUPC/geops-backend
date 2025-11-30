@@ -5,7 +5,7 @@ import com.geopslabs.geops.backend.campaign.interfaces.rest.resources.CreateCamp
 
 public class CreateCampaignCommandFromResourceAssembler {
     public static CreateCampaignCommand toCommandFromResource(CreateCampaignResource resource) {
-        return new CreateCampaignCommand(resource.name(),resource.description(),resource.startDate(),
+        return new CreateCampaignCommand(resource.userId(), resource.name(),resource.description(),resource.startDate(),
                 resource.endDate());
     }
 }

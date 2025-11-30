@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,9 @@ public class CampaignCommandServiceImpl implements CampaignCommandService {
             //Verifies if user is found by a user id
             var foundUser = userRepository.findById(command.userId());
             if(foundUser.isEmpty()) return Optional.empty();
+            //Verifies if user is OWNER role
+            if(!Objects.equals(foundUser.get().getRole(), "OWNER"))
+                throw new IllegalArgumentException("The user does not have OWNER role");
 
             var campaign = new Campaign(foundUser.get(),command);
 

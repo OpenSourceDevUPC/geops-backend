@@ -38,7 +38,7 @@ public class CampaignController {
     }
 
     @PostMapping()
-    @Operation(description = "Creates a new campaign")
+    @Operation(summary = "Creates a new campaign", description = "Creates a Campaign with the given information")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Campaign created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input")
@@ -52,13 +52,12 @@ public class CampaignController {
     }
 
     @GetMapping
-    @Operation(summary = "Gets all the registered campaigns")
+    @Operation(summary = "Gets all the registered campaigns", description = "Gets all the campaigns in the database")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Campaigns retrieved successfully")
     })
     public ResponseEntity<List<CampaignResource>> getAll() {
-        var campaigns = campaignQueryService.handle(new  GetAllCampaignsQuery());
-        if (campaigns.isEmpty()) return ResponseEntity.notFound().build();
+        var campaigns = campaignQueryService.handle(new GetAllCampaignsQuery());
         var campaignResources = campaigns.stream()
                 .map(CampaignResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
@@ -66,7 +65,7 @@ public class CampaignController {
     }
 
     @GetMapping("/{id}")
-    @Operation(description = "Gets a Campaign by its id")
+    @Operation(summary = "Gets a Campaign by its id", description = "Gets a campaign by giving its unique identifier")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Campaign found"),
             @ApiResponse(responseCode = "404", description = "Campaign not found"),
@@ -81,6 +80,8 @@ public class CampaignController {
     }
 
     @GetMapping("/user/{userId}/campaigns")
+    @Operation(summary = "Gets all the campaigns registered with the user",
+            description = "Gets all campaigns from the user by giving the user unique identifier")
     public ResponseEntity<List<CampaignResource>> getCampaignsByUserId(
             @Parameter(description = "User unique identifier") @PathVariable Long userId)
     {
@@ -92,7 +93,7 @@ public class CampaignController {
     }
 
     @PatchMapping("/{id}")
-    @Operation(description = "Updates a Campaign with its id and some given information")
+    @Operation(summary = "Updates a campaign",description = "Updates a campaign with its id and some given information")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Campaign successfully updated"),
             @ApiResponse(responseCode = "400", description = "Invalid input data or validation error"),

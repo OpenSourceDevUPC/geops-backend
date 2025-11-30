@@ -1,6 +1,7 @@
 package com.geopslabs.geops.backend.campaign.domain.services;
 
 import com.geopslabs.geops.backend.campaign.domain.model.aggregates.Campaign;
+import com.geopslabs.geops.backend.campaign.domain.model.queries.GetAllCampaignsByUserIdQuery;
 import com.geopslabs.geops.backend.campaign.domain.model.queries.GetAllCampaignsQuery;
 import com.geopslabs.geops.backend.campaign.domain.model.queries.GetCampaignByIdQuery;
 
@@ -15,4 +16,6 @@ public interface CampaignQueryService {
     Optional<Campaign> handle(GetCampaignByIdQuery query);
 
     List<Campaign> handle(GetAllCampaignsQuery query);
+
+    List<Campaign> handle(GetAllCampaignsByUserIdQuery query);
 }

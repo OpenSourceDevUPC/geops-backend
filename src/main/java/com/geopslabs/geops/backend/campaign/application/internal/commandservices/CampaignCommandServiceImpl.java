@@ -7,6 +7,7 @@ import com.geopslabs.geops.backend.campaign.domain.model.commands.UpdateCampaign
 import com.geopslabs.geops.backend.campaign.domain.model.valueobjects.ECampaignStatus;
 import com.geopslabs.geops.backend.campaign.domain.services.CampaignCommandService;
 import com.geopslabs.geops.backend.campaign.infrastructure.persistence.jpa.CampaignRepository;
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +19,21 @@ import java.util.Optional;
 public class CampaignCommandServiceImpl implements CampaignCommandService {
 
     private final CampaignRepository campaignRepository;
+    private final UserRepository userRepository;
 
-    public CampaignCommandServiceImpl(CampaignRepository campaignRepository) {
+    public CampaignCommandServiceImpl(CampaignRepository campaignRepository, UserRepository userRepository) {
         this.campaignRepository = campaignRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Optional<Campaign> handle(CreateCampaignCommand command) {
         try{
-            var campaign = new Campaign(command);
+            //Verifies if user is found by a user id
+            var foundUser = userRepository.findById(command.userId());
+            if(foundUser.isEmpty()) return Optional.empty();
+
+            var campaign = new Campaign(foundUser.get(),command);
 
             var savedCampaign = campaignRepository.save(campaign);
 

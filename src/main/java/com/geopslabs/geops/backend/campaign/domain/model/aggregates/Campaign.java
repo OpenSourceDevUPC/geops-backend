@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.campaign.domain.model.aggregates;
 
 import com.geopslabs.geops.backend.campaign.domain.model.commands.CreateCampaignCommand;
 import com.geopslabs.geops.backend.campaign.domain.model.valueobjects.ECampaignStatus;
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,6 +16,11 @@ import java.time.LocalDate;
 @Entity
 @Getter
 public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -46,7 +52,12 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
 
     public Campaign(){}
 
-    public Campaign(CreateCampaignCommand command) {
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    public Campaign(User user, CreateCampaignCommand command) {
+        this.user = user;
         this.name = command.name();
         this.description = command.description();
         this.startDate = command.startDate();

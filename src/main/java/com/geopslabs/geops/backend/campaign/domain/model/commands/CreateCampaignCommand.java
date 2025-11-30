@@ -6,14 +6,18 @@ import java.time.LocalDate;
 
 /**
  * Command to create a campaign
+ * @param userId The user id
  * @param name The campaign name
  * @param description The campaign description
  * @param startDate The start date of the campaign
  * @param endDate The end date of the campaign
  * @see Campaign
  */
-public record CreateCampaignCommand(String name, String description, LocalDate startDate, LocalDate endDate) {
+public record CreateCampaignCommand(Long userId, String name, String description, LocalDate startDate, LocalDate endDate) {
     public CreateCampaignCommand {
+        if(userId == null || userId < 0)
+            throw new IllegalArgumentException("userId cannot be null");
+
         if(name == null || name.isBlank())
             throw new IllegalArgumentException("Campaign name cannot be null or blank");
 

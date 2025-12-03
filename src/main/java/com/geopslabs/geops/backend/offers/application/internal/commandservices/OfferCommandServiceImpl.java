@@ -1,7 +1,10 @@
 package com.geopslabs.geops.backend.offers.application.internal.commandservices;
 
+import com.geopslabs.geops.backend.campaign.domain.model.valueobjects.ECampaignStatus;
+import com.geopslabs.geops.backend.campaign.infrastructure.persistence.jpa.CampaignRepository;
 import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import com.geopslabs.geops.backend.offers.domain.model.commands.CreateOfferCommand;
+import com.geopslabs.geops.backend.offers.domain.model.commands.DeleteOfferCommand;
 import com.geopslabs.geops.backend.offers.domain.model.commands.UpdateOfferCommand;
 import com.geopslabs.geops.backend.offers.domain.services.OfferCommandService;
 import com.geopslabs.geops.backend.offers.infrastructure.persistence.jpa.OfferRepository;
@@ -12,7 +15,6 @@ import java.util.Optional;
 
 /**
  * OfferCommandServiceImpl
- *
  * Implementation of the OfferCommandService that handles all command operations
  * for offers. This service implements the business logic for
  * creating, updating, and managing offers following DDD principles
@@ -26,14 +28,16 @@ import java.util.Optional;
 public class OfferCommandServiceImpl implements OfferCommandService {
 
     private final OfferRepository offerRepository;
+    private final CampaignRepository campaignRepository;
 
     /**
      * Constructor for dependency injection
      *
      * @param offerRepository The repository for offer data access
      */
-    public OfferCommandServiceImpl(OfferRepository offerRepository) {
+    public OfferCommandServiceImpl(OfferRepository offerRepository, CampaignRepository campaignRepository) {
         this.offerRepository = offerRepository;
+        this.campaignRepository = campaignRepository;
     }
 
     /**
@@ -42,8 +46,17 @@ public class OfferCommandServiceImpl implements OfferCommandService {
     @Override
     public Optional<Offer> handle(CreateOfferCommand command) {
         try {
+            //Verifying the campaign exists
+            var existingCampaign = campaignRepository.findCampaignById(command.campaignId());
+            if (existingCampaign.isEmpty())
+                throw new IllegalArgumentException("Campaign with id " + command.campaignId() + " does not exist");
+
+            //Verifying if the campaign is active
+            if(existingCampaign.get().getStatus() != ECampaignStatus.ACTIVE)
+                throw new IllegalArgumentException("The Campaign is not ACTIVE");
+
             // Create new offer from command
-            var offer = new Offer(command);
+            var offer = new Offer(existingCampaign.get(), command);
 
             // Save the offer to the repository
             var savedOffer = offerRepository.save(offer);
@@ -93,19 +106,19 @@ public class OfferCommandServiceImpl implements OfferCommandService {
      * {@inheritDoc}
      */
     @Override
-    public boolean handleDelete(Long id) {
-        if (id == null || id <= 0) {
+    public boolean handle(DeleteOfferCommand command) {
+        if (command.id() == null || command.id() <= 0) {
             throw new IllegalArgumentException("id cannot be null or negative");
         }
 
         try {
             // First check if offer exists
-            if (!offerRepository.existsById(id)) {
+            if (!offerRepository.existsById(command.id())) {
                 return false;
             }
 
             // Delete the offer
-            offerRepository.deleteById(id);
+            offerRepository.deleteById(command.id());
             return true;
 
         } catch (Exception e) {

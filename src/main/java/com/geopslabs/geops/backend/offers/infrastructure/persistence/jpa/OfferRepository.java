@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * OfferRepository
- *
  * JPA Repository interface for Offer aggregate root
  * This repository provides data access operations for offers
  * including custom queries for offer management and retrieval operations
@@ -27,4 +26,12 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
      * @return A List of Offer objects with the specified IDs
      */
     List<Offer> findByIdIn(List<Long> ids);
+
+    /**
+     * Finds all offers from a campaign using its campaign unique id
+     * @param campaignId The campaign ID
+     * @return A list of offer objects from the campaign
+     */
+    List<Offer> findByCampaign_Id(Long campaignId);
+
 }

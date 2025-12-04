@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.offers.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.campaign.domain.model.aggregates.Campaign;
 import com.geopslabs.geops.backend.offers.domain.model.commands.CreateOfferCommand;
 import com.geopslabs.geops.backend.offers.domain.model.commands.UpdateOfferCommand;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -25,6 +26,12 @@ import java.time.LocalDate;
 @Getter
 public class Offer extends AuditableAbstractAggregateRoot<Offer> {
 
+    /**
+     * Campaign id of the offer
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campaign_id", nullable = false)
+    private Campaign campaign;
     /**
      * Title of the offer
      */
@@ -90,7 +97,8 @@ public class Offer extends AuditableAbstractAggregateRoot<Offer> {
      *
      * @param command The command containing offer creation data
      */
-    public Offer(CreateOfferCommand command) {
+    public Offer(Campaign campaign, CreateOfferCommand command) {
+        this.campaign = campaign;
         this.title = command.title();
         this.partner = command.partner();
         this.price = command.price();

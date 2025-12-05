@@ -1,10 +1,9 @@
 package com.geopslabs.geops.backend.sales.application.services;
-
 import com.geopslabs.geops.backend.sales.domain.model.aggregates.OrderHistory;
 import com.geopslabs.geops.backend.sales.domain.repositories.OrderHistoryRepository;
-import com.geopslabs.geops.backend.sales.interfaces.dto.OrderHistoryDetailedDTO;
-import com.geopslabs.geops.backend.sales.interfaces.dto.OrderHistoryDTOMapper;
-import com.geopslabs.geops.backend.sales.interfaces.dto.OrderHistoryGeneralDTO;
+import com.geopslabs.geops.backend.sales.interfaces.rest.resources.OrderHistoryDetailResource;
+import com.geopslabs.geops.backend.sales.interfaces.rest.resources.OrderHistoryResource;
+import com.geopslabs.geops.backend.sales.interfaces.rest.transform.OrderHistoryResourceFromEntityAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +18,16 @@ import java.util.stream.Collectors;
  * - Guarda nuevos históricos
  * - Obtiene históricos por proveedor (su vista principal)
  * - Obtiene históricos por comprador
- * - Convierte a DTOs
+ * - Convierte a Resources para la API REST
  */
 @Service
 public class OrderHistoryApplicationService {
 
     private final OrderHistoryRepository orderHistoryRepository;
-    private final OrderHistoryDTOMapper dtoMapper;
 
     @Autowired
-    public OrderHistoryApplicationService(OrderHistoryRepository orderHistoryRepository,
-                                          OrderHistoryDTOMapper dtoMapper) {
+    public OrderHistoryApplicationService(OrderHistoryRepository orderHistoryRepository) {
         this.orderHistoryRepository = orderHistoryRepository;
-        this.dtoMapper = dtoMapper;
     }
 
     /**
@@ -52,15 +48,15 @@ public class OrderHistoryApplicationService {
      * Se ordena por fecha descendente (más recientes primero)
      *
      * @param supplierId ID del proveedor
-     * @return Lista de DTOs con información general (tabla)
+     * @return Lista de Resources con información general (tabla)
      */
     @Transactional(readOnly = true)
-    public List<OrderHistoryGeneralDTO> getSupplierOrderHistory(String supplierId) {
+    public List<OrderHistoryResource> getSupplierOrderHistory(String supplierId) {
         List<OrderHistory> orders = orderHistoryRepository
                 .findBySupplierIdOrderByPurchaseDateDesc(supplierId);
 
         return orders.stream()
-                .map(dtoMapper::toGeneralDTO)
+                .map(OrderHistoryResourceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -70,15 +66,15 @@ public class OrderHistoryApplicationService {
      * Se ordena por fecha descendente (más recientes primero)
      *
      * @param userId ID del comprador
-     * @return Lista de DTOs con información general
+     * @return Lista de Resources con información general
      */
     @Transactional(readOnly = true)
-    public List<OrderHistoryGeneralDTO> getCustomerOrderHistory(String userId) {
+    public List<OrderHistoryResource> getCustomerOrderHistory(String userId) {
         List<OrderHistory> orders = orderHistoryRepository
                 .findByUserIdOrderByPurchaseDateDesc(userId);
 
         return orders.stream()
-                .map(dtoMapper::toGeneralDTO)
+                .map(OrderHistoryResourceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -88,24 +84,24 @@ public class OrderHistoryApplicationService {
      * Se usa cuando el usuario clickea en una orden para ver detalles completos
      *
      * @param orderHistoryId ID del OrderHistory
-     * @return DTO detallado de la orden
+     * @return Resource detallado de la orden
      */
     @Transactional(readOnly = true)
-    public OrderHistoryDetailedDTO getOrderHistoryDetails(Long orderHistoryId) {
+    public OrderHistoryDetailResource getOrderHistoryDetails(Long orderHistoryId) {
         OrderHistory orderHistory = orderHistoryRepository.findById(orderHistoryId).orElse(null);
-        return dtoMapper.toDetailedDTO(orderHistory);
+        return OrderHistoryResourceFromEntityAssembler.toDetailResourceFromEntity(orderHistory);
     }
 
     /**
      * Obtiene una orden por su paymentId (único)
      *
      * @param paymentId ID del pago
-     * @return DTO detallado de la orden
+     * @return Resource detallado de la orden
      */
     @Transactional(readOnly = true)
-    public OrderHistoryDetailedDTO getOrderHistoryByPaymentId(String paymentId) {
+    public OrderHistoryDetailResource getOrderHistoryByPaymentId(String paymentId) {
         OrderHistory orderHistory = orderHistoryRepository.findByPaymentId(paymentId).orElse(null);
-        return dtoMapper.toDetailedDTO(orderHistory);
+        return OrderHistoryResourceFromEntityAssembler.toDetailResourceFromEntity(orderHistory);
     }
 
     /**
@@ -117,12 +113,12 @@ public class OrderHistoryApplicationService {
      * @return Lista de órdenes con cupones pendientes
      */
     @Transactional(readOnly = true)
-    public List<OrderHistoryGeneralDTO> getSupplierOrdersWithPendingCoupons(String supplierId) {
+    public List<OrderHistoryResource> getSupplierOrdersWithPendingCoupons(String supplierId) {
         List<OrderHistory> orders = orderHistoryRepository
                 .findSupplierOrdersWithPendingCoupons(supplierId);
 
         return orders.stream()
-                .map(dtoMapper::toGeneralDTO)
+                .map(OrderHistoryResourceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -136,10 +132,10 @@ public class OrderHistoryApplicationService {
      * @param redeemedCoupons Cupones canjeados
      * @param pendingCoupons Cupones pendientes
      * @param expiredCoupons Cupones expirados
-     * @return OrderHistory actualizado como DTO
+     * @return OrderHistory actualizado como Resource
      */
     @Transactional
-    public OrderHistoryDetailedDTO updateCouponCounts(
+    public OrderHistoryDetailResource updateCouponCounts(
             Long orderHistoryId,
             Integer totalCoupons,
             Integer redeemedCoupons,
@@ -154,6 +150,6 @@ public class OrderHistoryApplicationService {
         orderHistory.updateCouponCounts(totalCoupons, redeemedCoupons, pendingCoupons, expiredCoupons);
         OrderHistory updated = orderHistoryRepository.save(orderHistory);
 
-        return dtoMapper.toDetailedDTO(updated);
+        return OrderHistoryResourceFromEntityAssembler.toDetailResourceFromEntity(updated);
     }
 }

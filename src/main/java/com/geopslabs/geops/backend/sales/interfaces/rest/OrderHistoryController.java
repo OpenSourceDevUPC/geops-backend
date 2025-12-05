@@ -1,8 +1,8 @@
 package com.geopslabs.geops.backend.sales.interfaces.rest;
 
 import com.geopslabs.geops.backend.sales.application.services.OrderHistoryApplicationService;
-import com.geopslabs.geops.backend.sales.interfaces.dto.OrderHistoryDetailedDTO;
-import com.geopslabs.geops.backend.sales.interfaces.dto.OrderHistoryGeneralDTO;
+import com.geopslabs.geops.backend.sales.interfaces.rest.resources.OrderHistoryDetailResource;
+import com.geopslabs.geops.backend.sales.interfaces.rest.resources.OrderHistoryResource;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +41,10 @@ public class OrderHistoryController {
      * @return Lista de órdenes con información resumida
      */
     @GetMapping("/supplier/{supplierId}")
-    public ResponseEntity<List<OrderHistoryGeneralDTO>> getSupplierOrderHistory(
+    public ResponseEntity<List<OrderHistoryResource>> getSupplierOrderHistory(
             @PathVariable String supplierId) {
 
-        List<OrderHistoryGeneralDTO> orders = orderHistoryService.getSupplierOrderHistory(supplierId);
+        List<OrderHistoryResource> orders = orderHistoryService.getSupplierOrderHistory(supplierId);
         return ResponseEntity.ok(orders);
     }
 
@@ -57,10 +57,10 @@ public class OrderHistoryController {
      * @return Lista de órdenes con información resumida
      */
     @GetMapping("/customer/{userId}")
-    public ResponseEntity<List<OrderHistoryGeneralDTO>> getCustomerOrderHistory(
+    public ResponseEntity<List<OrderHistoryResource>> getCustomerOrderHistory(
             @PathVariable String userId) {
 
-        List<OrderHistoryGeneralDTO> orders = orderHistoryService.getCustomerOrderHistory(userId);
+        List<OrderHistoryResource> orders = orderHistoryService.getCustomerOrderHistory(userId);
         return ResponseEntity.ok(orders);
     }
 
@@ -73,10 +73,10 @@ public class OrderHistoryController {
      * @return Todos los detalles de la orden
      */
     @GetMapping("/{orderHistoryId}")
-    public ResponseEntity<OrderHistoryDetailedDTO> getOrderHistoryDetails(
+    public ResponseEntity<OrderHistoryDetailResource> getOrderHistoryDetails(
             @PathVariable Long orderHistoryId) {
 
-        OrderHistoryDetailedDTO orderDetails = orderHistoryService.getOrderHistoryDetails(orderHistoryId);
+        OrderHistoryDetailResource orderDetails = orderHistoryService.getOrderHistoryDetails(orderHistoryId);
 
         if (orderDetails == null) {
             return ResponseEntity.notFound().build();
@@ -94,10 +94,10 @@ public class OrderHistoryController {
      * @return Todos los detalles de la orden
      */
     @GetMapping("/payment/{paymentId}")
-    public ResponseEntity<OrderHistoryDetailedDTO> getOrderHistoryByPaymentId(
+    public ResponseEntity<OrderHistoryDetailResource> getOrderHistoryByPaymentId(
             @PathVariable String paymentId) {
 
-        OrderHistoryDetailedDTO orderDetails = orderHistoryService.getOrderHistoryByPaymentId(paymentId);
+        OrderHistoryDetailResource orderDetails = orderHistoryService.getOrderHistoryByPaymentId(paymentId);
 
         if (orderDetails == null) {
             return ResponseEntity.notFound().build();
@@ -115,10 +115,10 @@ public class OrderHistoryController {
      * @return Lista de órdenes con cupones pendientes
      */
     @GetMapping("/supplier/{supplierId}/pending-coupons")
-    public ResponseEntity<List<OrderHistoryGeneralDTO>> getSupplierOrdersWithPendingCoupons(
+    public ResponseEntity<List<OrderHistoryResource>> getSupplierOrdersWithPendingCoupons(
             @PathVariable String supplierId) {
 
-        List<OrderHistoryGeneralDTO> orders = orderHistoryService
+        List<OrderHistoryResource> orders = orderHistoryService
                 .getSupplierOrdersWithPendingCoupons(supplierId);
         return ResponseEntity.ok(orders);
     }
@@ -136,14 +136,14 @@ public class OrderHistoryController {
      * @return Orden actualizada
      */
     @PutMapping("/{orderHistoryId}/coupon-counts")
-    public ResponseEntity<OrderHistoryDetailedDTO> updateCouponCounts(
+    public ResponseEntity<OrderHistoryDetailResource> updateCouponCounts(
             @PathVariable Long orderHistoryId,
             @RequestParam Integer totalCoupons,
             @RequestParam Integer redeemedCoupons,
             @RequestParam Integer pendingCoupons,
             @RequestParam Integer expiredCoupons) {
 
-        OrderHistoryDetailedDTO updated = orderHistoryService.updateCouponCounts(
+        OrderHistoryDetailResource updated = orderHistoryService.updateCouponCounts(
                 orderHistoryId,
                 totalCoupons,
                 redeemedCoupons,

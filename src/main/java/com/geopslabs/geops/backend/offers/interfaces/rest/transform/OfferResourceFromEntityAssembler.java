@@ -32,7 +32,7 @@ public class OfferResourceFromEntityAssembler {
             entity.getPartner(),
             entity.getPrice(),
             entity.getCodePrefix(),
-            entity.getvalidTo(),
+            entity.getValidTo(),
             entity.getRating(),
             entity.getLocation(),
             entity.getCategory(),

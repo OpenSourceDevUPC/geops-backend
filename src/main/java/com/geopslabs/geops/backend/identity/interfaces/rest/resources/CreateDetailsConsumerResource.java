@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * CreateDetailsConsumerResource
  *
- * Resource DTO for creating consumer details via REST API
+ * Resource Resource for creating consumer details via REST API
  * This resource represents the request payload for creating new consumer details
  *
  * @summary Request resource for creating consumer details

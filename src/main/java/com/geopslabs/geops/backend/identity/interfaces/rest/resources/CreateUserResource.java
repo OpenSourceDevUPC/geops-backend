@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * CreateUserResource
  *
- * Resource DTO for creating a new user via REST API
+ * Resource Resource for creating a new user via REST API
  * This resource represents the request payload for user registration
  *
  * @summary Request resource for creating a user

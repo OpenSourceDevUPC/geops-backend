@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.favorites.interfaces.rest.resources.CreateFav
  *
  * Assembler class responsible for converting CreateFavoriteResource objects
  * to CreateFavoriteCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands
+ * of converting interface layer Resources to domain layer commands
  *
  * @summary Converts CreateFavoriteResource to CreateFavoriteCommand
  * @since 1.0

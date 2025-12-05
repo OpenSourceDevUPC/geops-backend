@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.reviews.interfaces.rest.resources;
 /**
  * ReviewResource
  *
- * Resource DTO for representing review data via REST API
+ * Resource Resource for representing review data via REST API
  * This resource encapsulates the review information returned in API responses
  *
  * @summary Resource for review representation

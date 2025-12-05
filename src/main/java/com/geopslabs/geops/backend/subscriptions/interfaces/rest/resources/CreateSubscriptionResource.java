@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * CreateSubscriptionResource
  *
- * Resource DTO for creating subscription plans via REST API.
+ * Resource Resource for creating subscription plans via REST API.
  * This resource represents the request payload for subscription plan creation,
  * matching the frontend interface structure: { id, price, recommended, type }
  *

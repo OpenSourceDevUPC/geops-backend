@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * UserResource
  *
- * Resource DTO for user responses via REST API
+ * Resource Resource for user responses via REST API
  * This resource represents the response payload containing user information
  * Note: Password is excluded from the response for security reasons
  *

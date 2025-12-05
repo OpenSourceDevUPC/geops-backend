@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.identity.interfaces.rest.resources.UpdateUser
  *
  * Assembler class responsible for converting UpdateUserResource objects
  * to UpdateUserCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands
+ * of converting interface layer Resources to domain layer commands
  *
  * @summary Converts UpdateUserResource to UpdateUserCommand
  * @since 1.0

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 /**
  * CreateOfferResource
- * Resource DTO for creating offers via REST API.
+ * Resource Resource for creating offers via REST API.
  * This resource represents the request payload for offer creation.
  *
  * @summary Request resource for creating offers

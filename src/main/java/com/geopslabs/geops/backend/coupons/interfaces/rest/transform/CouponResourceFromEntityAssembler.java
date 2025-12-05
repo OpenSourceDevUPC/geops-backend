@@ -11,7 +11,7 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.OfferResourc
  *
  * Assembler class responsible for converting Coupon entity objects
  * to CouponResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses.
+ * of converting domain layer entities to interface layer Resources for API responses.
  *
  * @summary Converts Coupon entity to CouponResource
  * @since 1.0

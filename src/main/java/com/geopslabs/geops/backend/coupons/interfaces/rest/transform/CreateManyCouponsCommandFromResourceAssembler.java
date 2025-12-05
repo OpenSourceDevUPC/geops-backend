@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Assembler class responsible for converting CreateManyCouponsResource objects
  * to CreateManyCouponsCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands for bulk operations.
+ * of converting interface layer Resources to domain layer commands for bulk operations.
  *
  * @summary Converts CreateManyCouponsResource to CreateManyCouponsCommand
  * @since 1.0

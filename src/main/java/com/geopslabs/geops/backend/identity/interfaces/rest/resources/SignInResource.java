@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * SignInResource
  *
- * Resource DTO for user authentication via REST API
+ * Resource Resource for user authentication via REST API
  * This resource represents the request payload for user sign-in
  *
  * @summary Request resource for user authentication

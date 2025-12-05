@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * DetailsConsumerResource
  *
- * Resource DTO for consumer details responses via REST API
+ * Resource Resource for consumer details responses via REST API
  * This resource represents the response payload containing consumer details information
  *
  * @summary Response resource for consumer details data

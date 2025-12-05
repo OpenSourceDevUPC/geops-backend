@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * CreateManyCouponsResource
  *
- * Resource DTO for creating multiple coupons via REST API.
+ * Resource Resource for creating multiple coupons via REST API.
  * This resource represents the request payload for bulk coupon creation,
  * supporting the frontend's createMany method that expects a bulk endpoint.
  *

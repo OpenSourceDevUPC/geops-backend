@@ -6,10 +6,10 @@ import com.geopslabs.geops.backend.identity.interfaces.rest.resources.DetailsOwn
 /**
  * DetailsOwnerResourceFromEntityAssembler
  *
- * Assembler class that transforms DetailsOwner entities to DetailsOwnerResource DTOs
+ * Assembler class that transforms DetailsOwner entities to DetailsOwnerResource Resources
  * This class follows the Assembler pattern to separate domain objects from REST representations
  *
- * @summary Transforms DetailsOwner entities to resource DTOs
+ * @summary Transforms DetailsOwner entities to resource Resources
  * @since 1.0
  * @author GeOps Labs
  */
@@ -19,7 +19,7 @@ public class DetailsOwnerResourceFromEntityAssembler {
      * Transforms a DetailsOwner entity to a DetailsOwnerResource
      *
      * @param entity The DetailsOwner entity to transform
-     * @return The corresponding DetailsOwnerResource DTO
+     * @return The corresponding DetailsOwnerResource Resource
      */
     public static DetailsOwnerResource toResourceFromEntity(DetailsOwner entity) {
         return new DetailsOwnerResource(

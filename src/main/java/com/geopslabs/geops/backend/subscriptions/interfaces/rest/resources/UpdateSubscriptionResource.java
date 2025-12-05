@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * UpdateSubscriptionResource
  *
- * Resource DTO used for updating a subscription plan via REST API.
+ * Resource Resource used for updating a subscription plan via REST API.
  * Fields are nullable to support partial updates. Do not perform strict validation
  * here; validation is performed by application/command layer if needed.
  *

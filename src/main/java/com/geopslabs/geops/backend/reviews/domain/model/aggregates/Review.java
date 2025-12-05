@@ -1,11 +1,11 @@
 package com.geopslabs.geops.backend.reviews.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
+import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import com.geopslabs.geops.backend.reviews.domain.model.commands.CreateReviewCommand;
 import com.geopslabs.geops.backend.reviews.domain.model.commands.UpdateReviewCommand;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 /**
@@ -20,21 +20,26 @@ import lombok.Getter;
  * @author GeOps Labs
  */
 @Entity
-@Table(name = "reviews")
+@Table(name = "reviews", indexes = {
+    @Index(name = "idx_offer_id", columnList = "offer_id"),
+    @Index(name = "idx_user_id", columnList = "user_id")
+})
 @Getter
 public class Review extends AuditableAbstractAggregateRoot<Review> {
 
     /**
-     * Offer identifier that this review belongs to
+     * Reference to the offer that this review belongs to
      */
-    @Column(name = "offer_id", nullable = false)
-    private String offerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "offer_id", nullable = false)
+    private Offer offer;
 
     /**
-     * User identifier who created the review
+     * Reference to the user who created the review
      */
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     /**
      * Name of the user who created the review
@@ -69,14 +74,34 @@ public class Review extends AuditableAbstractAggregateRoot<Review> {
      * Creates a new Review from a CreateReviewCommand
      *
      * @param command The command containing review creation data
+     * @param user The user entity reference
+     * @param offer The offer entity reference
      */
-    public Review(CreateReviewCommand command) {
-        this.offerId = command.offerId();
-        this.userId = command.userId();
+    public Review(CreateReviewCommand command, User user, Offer offer) {
+        this.offer = offer;
+        this.user = user;
         this.userName = command.userName();
         this.rating = command.rating();
         this.text = command.text();
         this.likes = 0; // Always starts with 0 likes
+    }
+
+    /**
+     * Gets the offer ID for this review
+     *
+     * @return The offer ID
+     */
+    public Long getOfferId() {
+        return this.offer != null ? this.offer.getId() : null;
+    }
+
+    /**
+     * Gets the user ID for this review
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
     }
 
     /**

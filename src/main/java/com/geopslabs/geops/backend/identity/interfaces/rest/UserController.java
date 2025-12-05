@@ -144,6 +144,7 @@ public class UserController {
             id,
             userResource.name(),
             userResource.email(),
+            userResource.phone(),
             userResource.role(),
             userResource.plan()
         );
@@ -159,3 +160,4 @@ public class UserController {
         return ResponseEntity.ok(resource);
     }
 }
+

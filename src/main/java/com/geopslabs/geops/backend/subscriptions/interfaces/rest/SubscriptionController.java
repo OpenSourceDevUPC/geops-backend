@@ -1,6 +1,8 @@
 package com.geopslabs.geops.backend.subscriptions.interfaces.rest;
 
+import com.geopslabs.geops.backend.subscriptions.domain.model.commands.DeleteSubscriptionCommand;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsByTypeQuery;
+import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetSubscriptionByIdQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetRecommendedSubscriptionsQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.services.SubscriptionCommandService;
@@ -132,7 +134,8 @@ public class SubscriptionController {
     })
     @GetMapping
     public ResponseEntity<List<SubscriptionResource>> getAll() {
-        var subscriptions = subscriptionQueryService.getAllSubscriptions();
+        var query = new GetAllSubscriptionsQuery();
+        var subscriptions = subscriptionQueryService.handle(query);
         var subscriptionResources = subscriptions.stream()
                 .map(SubscriptionResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
@@ -210,8 +213,9 @@ public class SubscriptionController {
         try {
             Long subscriptionId = Long.parseLong(id);
 
-            // Delete the subscription using the command service
-            var deleted = subscriptionCommandService.deleteSubscription(subscriptionId);
+            // Delete the subscription using the command
+            var command = new DeleteSubscriptionCommand(subscriptionId);
+            var deleted = subscriptionCommandService.handle(command);
 
             if (deleted) {
                 return ResponseEntity.noContent().build();

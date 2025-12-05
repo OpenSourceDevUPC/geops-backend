@@ -1,5 +1,7 @@
 package com.geopslabs.geops.backend.cart.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
+import com.geopslabs.geops.backend.offers.domain.model.aggregates.Offer;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -9,7 +11,11 @@ import lombok.Getter;
  * to allow efficient updates and queries.
  */
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_offer_id", columnList = "offer_id"),
+    @Index(name = "idx_cart_id", columnList = "cart_id")
+})
 public class CartItem {
 
     @Id
@@ -21,13 +27,15 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @Column(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter
-    private String userId;
+    private User user;
 
-    @Column(name = "offer_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "offer_id", nullable = false)
     @Getter
-    private String offerId;
+    private Offer offer;
 
     @Column(name = "offer_title")
     @Getter
@@ -53,14 +61,32 @@ public class CartItem {
         // for JPA
     }
 
-    public CartItem(String userId, String offerId, String offerTitle, Double offerPrice, String offerImageUrl, Integer quantity) {
-        this.userId = userId;
-        this.offerId = offerId;
+    public CartItem(User user, Offer offer, String offerTitle, Double offerPrice, String offerImageUrl, Integer quantity) {
+        this.user = user;
+        this.offer = offer;
         this.offerTitle = offerTitle;
         this.offerPrice = offerPrice;
         this.offerImageUrl = offerImageUrl;
         this.quantity = quantity == null ? 1 : quantity;
         this.total = this.quantity * (this.offerPrice == null ? 0.0 : this.offerPrice);
+    }
+
+    /**
+     * Gets the user ID for this cart item
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    /**
+     * Gets the offer ID for this cart item
+     *
+     * @return The offer ID
+     */
+    public Long getOfferId() {
+        return this.offer != null ? this.offer.getId() : null;
     }
 
     public void setCart(Cart cart) {

@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.payments.interfaces.rest.resources.CreatePaym
  *
  * Assembler class responsible for converting CreatePaymentResource objects
  * to CreatePaymentCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands.
+ * of converting interface layer Resources to domain layer commands.
  *
  * @summary Converts CreatePaymentResource to CreatePaymentCommand
  * @since 1.0
@@ -33,7 +33,7 @@ public class CreatePaymentCommandFromResourceAssembler {
             resource.cartId(),
             resource.amount(),
             resource.productType(),
-            resource.productId(),
+            resource.offerId(),
             resource.paymentCodes(),
             resource.paymentMethod(),
             resource.customerEmail(),

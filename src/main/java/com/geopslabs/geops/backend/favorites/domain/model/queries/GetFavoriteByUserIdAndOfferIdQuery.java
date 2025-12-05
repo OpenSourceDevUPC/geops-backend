@@ -13,19 +13,19 @@ package com.geopslabs.geops.backend.favorites.domain.model.queries;
  * @since 1.0
  * @author GeOps Labs
  */
-public record GetFavoriteByUserIdAndOfferIdQuery(String userId, String offerId) {
+public record GetFavoriteByUserIdAndOfferIdQuery(Long userId, Long offerId) {
     /**
      * Compact constructor that validates the query parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public GetFavoriteByUserIdAndOfferIdQuery {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
     }
 }

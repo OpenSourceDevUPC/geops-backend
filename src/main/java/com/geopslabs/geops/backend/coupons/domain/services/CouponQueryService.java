@@ -90,7 +90,7 @@ public interface CouponQueryService {
      * @return A List of valid Coupon objects for the specified user
      * @throws IllegalArgumentException if userId is null or empty
      */
-    List<Coupon> getValidCouponsByUserId(String userId);
+    List<Coupon> getValidCouponsByUserId(Long userId);
 
     /**
      * Retrieves expired coupons for cleanup or analysis purposes.

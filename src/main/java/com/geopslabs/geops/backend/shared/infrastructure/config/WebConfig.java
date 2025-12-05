@@ -26,7 +26,8 @@ public class WebConfig {
 
     public WebConfig(
             @Value("${frontend.url:http://localhost:4200}") String frontendUrl,
-            @Value("${prod.frontend.url:}") String prodFrontendUrl
+            @Value("${prod.frontend.url:}") String prodFrontendUrl,
+            @Value("${prod.backend.url:}") String prodBackendUrl
     ) {
         List<String> origins = new ArrayList<>();
         if (frontendUrl != null && !frontendUrl.isBlank()) {
@@ -34,6 +35,9 @@ public class WebConfig {
         }
         if (prodFrontendUrl != null && !prodFrontendUrl.isBlank()) {
             origins.add(prodFrontendUrl);
+        }
+        if (prodBackendUrl != null && !prodBackendUrl.isBlank()) {
+            origins.add(prodBackendUrl);
         }
         this.allowedOrigins = Collections.unmodifiableList(origins);
     }

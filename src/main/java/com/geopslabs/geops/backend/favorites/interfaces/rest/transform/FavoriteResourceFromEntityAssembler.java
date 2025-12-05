@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.favorites.interfaces.rest.resources.FavoriteR
  *
  * Assembler class responsible for converting Favorite entity objects
  * to FavoriteResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses
+ * of converting domain layer entities to interface layer Resources for API responses
  *
  * @summary Converts Favorite entity to FavoriteResource
  * @since 1.0

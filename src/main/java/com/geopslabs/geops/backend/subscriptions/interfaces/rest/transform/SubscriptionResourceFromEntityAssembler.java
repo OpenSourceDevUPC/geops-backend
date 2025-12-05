@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.subscriptions.interfaces.rest.resources.Subsc
  *
  * Assembler class responsible for converting Subscription entity objects
  * to SubscriptionResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses.
+ * of converting domain layer entities to interface layer Resources for API responses.
  *
  * @summary Converts Subscription entity to SubscriptionResource
  * @since 1.0

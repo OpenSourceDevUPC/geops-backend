@@ -13,14 +13,14 @@ package com.geopslabs.geops.backend.coupons.domain.model.queries;
  * @since 1.0
  * @author GeOps Labs
  */
-public record GetCouponsByPaymentIdQuery(String paymentId) {
+public record GetCouponsByPaymentIdQuery(Long paymentId) {
     /**
      * Compact constructor that validates the query parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public GetCouponsByPaymentIdQuery {
-        if (paymentId == null || paymentId.isBlank()) {
+        if (paymentId == null) {
             throw new IllegalArgumentException("paymentId cannot be null or empty");
         }
     }

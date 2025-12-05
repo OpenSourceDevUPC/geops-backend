@@ -93,11 +93,11 @@ public class FavoriteController {
     @GetMapping
     public ResponseEntity<?> getFavorites(
             @Parameter(description = "User ID (required)")
-            @RequestParam(required = true) String userId,
+            @RequestParam(required = true) Long userId,
             @Parameter(description = "Offer ID (optional - for checking if favorited)")
-            @RequestParam(required = false) String offerId) {
+            @RequestParam(required = false) Long offerId) {
 
-        if (offerId != null && !offerId.isBlank()) {
+        if (offerId != null) {
             // GET /favorites?userId=1&offerId=7
             // Check if specific favorite exists (for heart button)
             var query = new GetFavoriteByUserIdAndOfferIdQuery(userId, offerId);

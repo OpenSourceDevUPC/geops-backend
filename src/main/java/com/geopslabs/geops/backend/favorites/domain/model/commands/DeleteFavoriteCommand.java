@@ -15,8 +15,8 @@ package com.geopslabs.geops.backend.favorites.domain.model.commands;
  * @author GeOps Labs
  */
 public record DeleteFavoriteCommand(
-    String userId,
-    String offerId
+    Long userId,
+    Long offerId
 ) {
     /**
      * Compact constructor that validates the command parameters
@@ -24,12 +24,12 @@ public record DeleteFavoriteCommand(
      * @throws IllegalArgumentException if validation fails
      */
     public DeleteFavoriteCommand {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
     }
 }

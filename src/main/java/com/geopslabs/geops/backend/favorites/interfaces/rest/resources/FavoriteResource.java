@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.favorites.interfaces.rest.resources;
 /**
  * FavoriteResource
  *
- * Resource DTO for representing favorite data via REST API
+ * Resource Resource for representing favorite data via REST API
  * This resource encapsulates the favorite information returned in API responses
  *
  * @summary Resource for favorite representation
@@ -17,8 +17,8 @@ package com.geopslabs.geops.backend.favorites.interfaces.rest.resources;
  */
 public record FavoriteResource(
         Long id,
-        String userId,
-        String offerId,
+        Long userId,
+        Long offerId,
         String createdAt
 ) {
 }

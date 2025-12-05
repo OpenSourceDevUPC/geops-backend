@@ -60,7 +60,7 @@ public class CouponQueryServiceImpl implements CouponQueryService {
     @Override
     public List<Coupon> handle(GetAllCouponsByUserIdQuery query) {
         try {
-            return couponRepository.findByUserId(query.userId());
+            return couponRepository.findByUser_Id(Long.valueOf(query.userId()));
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error retrieving coupons by user ID: " + e.getMessage());
@@ -74,7 +74,7 @@ public class CouponQueryServiceImpl implements CouponQueryService {
     @Override
     public List<Coupon> handle(GetCouponsByPaymentIdQuery query) {
         try {
-            return couponRepository.findByPaymentId(query.paymentId());
+            return couponRepository.findByPayment_Id(query.paymentId());
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error retrieving coupons by payment ID: " + e.getMessage());
@@ -114,8 +114,8 @@ public class CouponQueryServiceImpl implements CouponQueryService {
      * {@inheritDoc}
      */
     @Override
-    public List<Coupon> getValidCouponsByUserId(String userId) {
-        if (userId == null || userId.isBlank()) {
+    public List<Coupon> getValidCouponsByUserId(Long userId) {
+        if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
 
@@ -226,13 +226,13 @@ public class CouponQueryServiceImpl implements CouponQueryService {
      * @return The count of coupons for the specified user
      * @throws IllegalArgumentException if userId is null or empty
      */
-    public long getCouponCountByUserId(String userId) {
-        if (userId == null || userId.isBlank()) {
+    public long getCouponCountByUserId(Long userId) {
+        if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
 
         try {
-            return couponRepository.countByUserId(userId);
+            return couponRepository.countByUser_Id(userId);
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error counting coupons by user ID: " + e.getMessage());

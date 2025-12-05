@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.coupons.interfaces.rest.resources.CreateCoupo
  *
  * Assembler class responsible for converting CreateCouponResource objects
  * to CreateCouponCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands.
+ * of converting interface layer Resources to domain layer commands.
  *
  * @summary Converts CreateCouponResource to CreateCouponCommand
  * @since 1.0

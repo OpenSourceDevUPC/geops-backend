@@ -2,6 +2,8 @@ package com.geopslabs.geops.backend.coupons.domain.model.aggregates;
 
 import com.geopslabs.geops.backend.coupons.domain.model.commands.CreateCouponCommand;
 import com.geopslabs.geops.backend.coupons.domain.model.commands.UpdateCouponCommand;
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
+import com.geopslabs.geops.backend.payments.domain.model.aggregates.Payment;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,22 +20,29 @@ import lombok.Getter;
  * @author GeOps Labs
  */
 @Entity
-@Table(name = "coupons")
+@Table(name = "coupons", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_payment_id", columnList = "payment_id"),
+    @Index(name = "idx_code", columnList = "code"),
+    @Index(name = "idx_expires_at", columnList = "expires_at")
+})
 public class Coupon extends AuditableAbstractAggregateRoot<Coupon> {
 
     /**
-     * User identifier who owns this coupon
+     * Reference to the user who owns this coupon
      */
-    @Column(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter
-    private String userId;
+    private User user;
 
     /**
-     * Payment identifier that generated this coupon
+     * Reference to the payment that generated this coupon
      */
-    @Column(name = "payment_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id", nullable = false)
     @Getter
-    private String paymentId;
+    private Payment payment;
 
     /**
      * Payment code generated at payment time
@@ -79,15 +88,35 @@ public class Coupon extends AuditableAbstractAggregateRoot<Coupon> {
      * Creates a new Coupon from a CreateCouponCommand
      *
      * @param command The command containing coupon creation data
+     * @param user The user entity reference
+     * @param payment The payment entity reference
      */
-    public Coupon(CreateCouponCommand command) {
-        this.userId = command.userId();
-        this.paymentId = command.paymentId();
+    public Coupon(CreateCouponCommand command, User user, Payment payment) {
+        this.user = user;
+        this.payment = payment;
         this.paymentCode = command.paymentCode();
         this.productType = command.productType();
         this.offerId = command.offerId();
         this.code = command.code();
         this.expiresAt = command.expiresAt();
+    }
+
+    /**
+     * Gets the user ID for this coupon
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
+    }
+
+    /**
+     * Gets the payment ID for this coupon
+     *
+     * @return The payment ID
+     */
+    public Long getPaymentId() {
+        return this.payment != null ? this.payment.getId() : null;
     }
 
     /**

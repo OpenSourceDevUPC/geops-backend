@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.payments.interfaces.rest.resources.UpdatePaym
  *
  * Assembler class responsible for converting UpdatePaymentStatusResource objects
  * to UpdatePaymentStatusCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands.
+ * of converting interface layer Resources to domain layer commands.
  *
  * @summary Converts UpdatePaymentStatusResource to UpdatePaymentStatusCommand
  * @since 1.0

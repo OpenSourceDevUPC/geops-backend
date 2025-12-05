@@ -5,8 +5,7 @@ import java.time.LocalDate;
 
 /**
  * CreateOfferResource
- *
- * Resource DTO for creating offers via REST API.
+ * Resource Resource for creating offers via REST API.
  * This resource represents the request payload for offer creation.
  *
  * @summary Request resource for creating offers
@@ -24,6 +23,7 @@ import java.time.LocalDate;
  * @author GeOps Labs
  */
 public record CreateOfferResource(
+    Long campaignId,
     String title,
     String partner,
     BigDecimal price,
@@ -32,14 +32,16 @@ public record CreateOfferResource(
     Integer rating,
     String location,
     String category,
-    String imageUrl
-) {
+    String imageUrl)
+{
     /**
      * Compact constructor that validates the resource parameters
      *
      * @throws IllegalArgumentException if validation fails
      */
     public CreateOfferResource {
+        if(campaignId == null || campaignId < 0)
+            throw new IllegalArgumentException("Campaign id cannot be null or negative");
 
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("title cannot be null or empty");

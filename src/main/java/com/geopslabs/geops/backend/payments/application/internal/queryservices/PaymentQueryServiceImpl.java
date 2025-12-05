@@ -58,7 +58,7 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
     @Override
     public List<Payment> handle(GetAllPaymentsByUserIdQuery query) {
         try {
-            return paymentRepository.findByUserId(query.userId());
+            return paymentRepository.findByUser_Id(query.userId());
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error retrieving payments by user ID: " + e.getMessage());
@@ -98,13 +98,13 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
      * {@inheritDoc}
      */
     @Override
-    public long getPaymentCountByUserId(String userId) {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+    public long getPaymentCountByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
         try {
-            return paymentRepository.countByUserId(userId);
+            return paymentRepository.countByUser_Id(userId);
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error counting payments by user ID: " + e.getMessage());
@@ -116,13 +116,13 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
      * {@inheritDoc}
      */
     @Override
-    public List<Payment> getPaymentsByCartId(String cartId) {
-        if (cartId == null || cartId.isBlank()) {
-            throw new IllegalArgumentException("cartId cannot be null or empty");
+    public List<Payment> getPaymentsByCartId(Long cartId) {
+        if (cartId == null) {
+            throw new IllegalArgumentException("cartId cannot be null");
         }
 
         try {
-            return paymentRepository.findByCartId(cartId);
+            return paymentRepository.findByCart_Id(cartId);
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error retrieving payments by cart ID: " + e.getMessage());
@@ -134,13 +134,13 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
      * {@inheritDoc}
      */
     @Override
-    public boolean existsPaymentByCartId(String cartId) {
-        if (cartId == null || cartId.isBlank()) {
-            throw new IllegalArgumentException("cartId cannot be null or empty");
+    public boolean existsPaymentByCartId(Long cartId) {
+        if (cartId == null) {
+            throw new IllegalArgumentException("cartId cannot be null");
         }
 
         try {
-            return paymentRepository.existsByCartId(cartId);
+            return paymentRepository.existsByCart_Id(cartId);
         } catch (Exception e) {
             // Log the error (in a real application, use proper logging framework)
             System.err.println("Error checking payment existence by cart ID: " + e.getMessage());
@@ -158,9 +158,9 @@ public class PaymentQueryServiceImpl implements PaymentQueryService {
      * @return A List of completed Payment objects for the specified user
      * @throws IllegalArgumentException if userId is null or empty
      */
-    public List<Payment> getCompletedPaymentsByUserId(String userId) {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+    public List<Payment> getCompletedPaymentsByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
         try {

@@ -1,5 +1,7 @@
 package com.geopslabs.geops.backend.offers.interfaces.rest;
 
+import com.geopslabs.geops.backend.offers.domain.model.commands.DeleteOfferCommand;
+import com.geopslabs.geops.backend.offers.domain.model.queries.GetAllOffersByCampaignIdQuery;
 import com.geopslabs.geops.backend.offers.domain.model.queries.GetAllOffersQuery;
 import com.geopslabs.geops.backend.offers.domain.model.queries.GetOfferByIdQuery;
 import com.geopslabs.geops.backend.offers.domain.model.queries.GetOffersByIdsQuery;
@@ -26,7 +28,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * OfferController
- *
  * REST controller that exposes offer endpoints for the GeOps platform
  * This controller handles HTTP requests for offer CRUD operations
  *
@@ -107,7 +108,6 @@ public class OfferController {
 
     /**
      * Retrieves all offers or offers by a list of IDs
-     *
      * This endpoint supports two modes:
      * 1. GET /offers - retrieves all offers
      * 2. GET /offers?id=1&id=2&id=3 - retrieves offers by specified IDs
@@ -198,12 +198,34 @@ public class OfferController {
     public ResponseEntity<Void> delete(
             @Parameter(description = "Offer unique identifier") @PathVariable Long id) {
 
-        boolean deleted = offerCommandService.handleDelete(id);
+        boolean deleted = offerCommandService.handle(new DeleteOfferCommand(id));
 
         if (!deleted) {
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Gets all offers from a campaign.
+     * @param id The campaign id.
+     * @return A list of {@link OfferResource} that has a campaign in common.
+     */
+    @Operation(summary = "Get all offers from a campaign", description = "Get all offers by using a campaign unique identifier")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Offers retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Offers not found")
+    })
+    @GetMapping("/campaign/{id}")
+    public ResponseEntity<List<OfferResource>> getByCampaignId(@PathVariable Long id){
+        var query = new GetAllOffersByCampaignIdQuery(id);
+
+        var offers = offerQueryService.handle(query);
+        if(offers.isEmpty()) return ResponseEntity.notFound().build();
+        var offersResource =  offers.stream()
+                .map(OfferResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(offersResource);
     }
 }

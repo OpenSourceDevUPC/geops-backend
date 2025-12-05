@@ -30,7 +30,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param userId The unique identifier of the user
      * @return A List of Payment objects for the specified user
      */
-    List<Payment> findByUserId(String userId);
+    List<Payment> findByUser_Id(Long userId);
 
     /**
      * Finds all payments with a specific status.
@@ -46,7 +46,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param cartId The unique identifier of the cart
      * @return A List of Payment objects associated with the specified cart
      */
-    List<Payment> findByCartId(String cartId);
+    List<Payment> findByCart_Id(Long cartId);
 
     /**
      * Finds a payment by its payment code.
@@ -62,7 +62,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param cartId The unique identifier of the cart
      * @return true if a payment exists for the cart, false otherwise
      */
-    boolean existsByCartId(String cartId);
+    boolean existsByCart_Id(Long cartId);
 
     /**
      * Counts the number of payments for a specific user.
@@ -70,7 +70,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param userId The unique identifier of the user
      * @return The count of payments for the specified user
      */
-    long countByUserId(String userId);
+    long countByUser_Id(Long userId);
 
     /**
      * Finds all completed payments for a specific user.
@@ -78,8 +78,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param userId The unique identifier of the user
      * @return A List of completed Payment objects for the specified user
      */
-    @Query("SELECT p FROM Payment p WHERE p.userId = :userId AND p.status = 'COMPLETED'")
-    List<Payment> findCompletedPaymentsByUserId(@Param("userId") String userId);
+    @Query("SELECT p FROM Payment p WHERE p.user.id = :userId AND p.status = 'COMPLETED'")
+    List<Payment> findCompletedPaymentsByUserId(@Param("userId") Long userId);
 
     /**
      * Finds all pending payments.
@@ -131,8 +131,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * @param userId The unique identifier of the user
      * @return An Optional containing the most recent Payment for the user
      */
-    @Query("SELECT p FROM Payment p WHERE p.userId = :userId ORDER BY p.createdAt DESC LIMIT 1")
-    Optional<Payment> findMostRecentPaymentByUserId(@Param("userId") String userId);
+    @Query("SELECT p FROM Payment p WHERE p.user.id = :userId ORDER BY p.createdAt DESC LIMIT 1")
+    Optional<Payment> findMostRecentPaymentByUserId(@Param("userId") Long userId);
 
     /**
      * Counts payments by payment method.

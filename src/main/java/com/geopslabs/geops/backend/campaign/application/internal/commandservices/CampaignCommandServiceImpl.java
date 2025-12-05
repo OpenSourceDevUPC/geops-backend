@@ -56,7 +56,7 @@ public class CampaignCommandServiceImpl implements CampaignCommandService {
             var foundCampaign = campaignRepository.findCampaignById(command.id());
             if(foundCampaign.isEmpty()) throw new NoSuchElementException("Campaign not found with id: " + command.id());
             foundCampaign.get().edit(command.name(), command.description(), command.startDate(), command.endDate(),
-                    ECampaignStatus.valueOf(command.status()));
+                    ECampaignStatus.valueOf(command.status()), command.estimatedBudget());
             var editedCampaign = campaignRepository.save(foundCampaign.get());
             return Optional.of(editedCampaign);
         }

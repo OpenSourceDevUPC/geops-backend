@@ -63,17 +63,20 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
         this.startDate = command.startDate();
         this.endDate = command.endDate();
         this.status = ECampaignStatus.ACTIVE;
-        this.estimatedBudget = 0;
+        this.estimatedBudget = command.estimatedBudget() != null ? command.estimatedBudget() : 0;
         this.totalImpressions = 0L;
         this.totalClicks = 0L;
         this.CTR = 0;
     }
 
-    public void edit(String name, String description, LocalDate startDate, LocalDate endDate, ECampaignStatus status) {
+    public void edit(String name, String description, LocalDate startDate, LocalDate endDate, ECampaignStatus status, Float estimatedBudget) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
+        if (estimatedBudget != null) {
+            this.estimatedBudget = estimatedBudget;
+        }
     }
 }

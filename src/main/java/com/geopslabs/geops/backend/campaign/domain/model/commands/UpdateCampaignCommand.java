@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 public record UpdateCampaignCommand(Long id, String name, String description, LocalDate startDate,
-                                    LocalDate endDate, String status) {
+                                    LocalDate endDate, String status, Float estimatedBudget) {
     public UpdateCampaignCommand {
 
         if(name == null || name.isBlank())

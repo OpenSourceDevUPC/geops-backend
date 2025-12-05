@@ -26,7 +26,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @param userId The unique identifier of the user
      * @return A List of Favorite objects for the specified user
      */
-    List<Favorite> findByUserId(String userId);
+    List<Favorite> findByUser_Id(Long userId);
 
     /**
      * Finds a favorite by user ID and offer ID
@@ -35,7 +35,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @param offerId The unique identifier of the offer
      * @return An Optional containing the Favorite if found, empty otherwise
      */
-    Optional<Favorite> findByUserIdAndOfferId(String userId, String offerId);
+    Optional<Favorite> findByUser_IdAndOffer_Id(Long userId, Long offerId);
 
     /**
      * Checks if a favorite exists for a specific user and offer
@@ -44,7 +44,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @param offerId The unique identifier of the offer
      * @return true if the favorite exists, false otherwise
      */
-    boolean existsByUserIdAndOfferId(String userId, String offerId);
+    boolean existsByUser_IdAndOffer_Id(Long userId, Long offerId);
 
     /**
      * Counts the total number of favorites for a specific offer
@@ -52,16 +52,16 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @param offerId The unique identifier of the offer
      * @return The number of users who favorites this offer
      */
-    long countByOfferId(String offerId);
+    long countByOffer_Id(Long offerId);
 
     /**
      * Deletes all favorites for a specific offer
      * Useful for cascade deletion when an offer is removed
      *
-     * @param offerId The unique identifier of the user
+     * @param offerId The unique identifier of the offer
      * @return The number of deleted favorites
      */
-    long deleteByOfferId(String offerId);
+    long deleteByOffer_Id(Long offerId);
 
     /**
      * Deletes a favorite by user ID and offer ID
@@ -71,6 +71,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
      * @param offerId The unique identifier of the offer
      * @return The number of deleted favorites (0 or 1)
      */
-    long deleteByUserIdAndOfferId(String userId, String offerId);
+    long deleteByUser_IdAndOffer_Id(Long userId, Long offerId);
 }
 

@@ -44,7 +44,7 @@ public class FavoriteQueryServiceImpl implements FavoriteQueryService {
     @Override
     public List<Favorite> handle(GetFavoritesByUserIdQuery query) {
         try {
-            return favoriteRepository.findByUserId(query.userId());
+            return favoriteRepository.findByUser_Id(Long.valueOf(query.userId()));
         } catch (Exception e) {
             // Log the error
             System.err.println("Error retrieving favorites by user ID: " + e.getMessage());
@@ -58,7 +58,7 @@ public class FavoriteQueryServiceImpl implements FavoriteQueryService {
     @Override
     public Optional<Favorite> handle(GetFavoriteByUserIdAndOfferIdQuery query) {
         try {
-            return favoriteRepository.findByUserIdAndOfferId(
+            return favoriteRepository.findByUser_IdAndOffer_Id(
                 query.userId(),
                 query.offerId()
             );

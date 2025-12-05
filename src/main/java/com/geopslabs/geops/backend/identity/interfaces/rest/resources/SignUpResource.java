@@ -9,7 +9,10 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
  * @summary Request resource for user registration
  * @param name The full name of the user
  * @param email The email address of the user
+ * @param phone The phone number of the user
  * @param password The password for authentication
+ * @param role The role of the user (CONSUMER or OWNER) - defaults to CONSUMER if not provided
+ * @param plan The subscription plan (BASIC or PREMIUM) - defaults to BASIC if not provided
  *
  * @since 1.0
  * @author GeOps Labs
@@ -17,8 +20,10 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 public record SignUpResource(
     String name,
     String email,
-    String password
+    String phone,
+    String password,
+    String role,
+    String plan
 ) {
 }
-
 

@@ -75,9 +75,9 @@ public interface PaymentQueryService {
      *
      * @param userId The unique identifier of the user
      * @return The number of payments made by the specified user
-     * @throws IllegalArgumentException if userId is null or empty
+     * @throws IllegalArgumentException if userId is null
      */
-    long getPaymentCountByUserId(String userId);
+    long getPaymentCountByUserId(Long userId);
 
     /**
      * Retrieves payments by cart ID.
@@ -87,9 +87,9 @@ public interface PaymentQueryService {
      *
      * @param cartId The unique identifier of the cart
      * @return A List of Payment objects associated with the specified cart
-     * @throws IllegalArgumentException if cartId is null or empty
+     * @throws IllegalArgumentException if cartId is null
      */
-    List<Payment> getPaymentsByCartId(String cartId);
+    List<Payment> getPaymentsByCartId(Long cartId);
 
     /**
      * Checks if a payment exists for a specific cart.
@@ -99,7 +99,7 @@ public interface PaymentQueryService {
      *
      * @param cartId The unique identifier of the cart
      * @return true if a payment exists for the cart, false otherwise
-     * @throws IllegalArgumentException if cartId is null or empty
+     * @throws IllegalArgumentException if cartId is null
      */
-    boolean existsPaymentByCartId(String cartId);
+    boolean existsPaymentByCartId(Long cartId);
 }

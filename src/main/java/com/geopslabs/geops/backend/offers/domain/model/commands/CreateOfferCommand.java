@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 /**
  * CreateOfferCommand
- *
  * Command record that encapsulates all the necessary data to create a new offer.
  * This command validates input data to ensure all required fields are provided
  * and meet the business rules for offer creation
  *
  * @summary Command to create a new offer
+ * @param campaignId The campaign id
  * @param title The title of the offer
  * @param partner The partner company providing the offer
  * @param price The price of the offer
@@ -24,6 +24,7 @@ import java.math.BigDecimal;
  * @author GeOps Labs
  */
 public record CreateOfferCommand (
+        Long campaignId,
         String title,
         String partner,
         java.math.BigDecimal price,
@@ -40,6 +41,10 @@ public record CreateOfferCommand (
      * @throws IllegalArgumentException if validation fails
      */
     public CreateOfferCommand {
+
+        if(campaignId == null || campaignId < 1){
+            throw new IllegalArgumentException("campaignId cannot be null or less than 1");
+        }
 
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("title cannot be null or empty");

@@ -10,8 +10,8 @@ package com.geopslabs.geops.backend.favorites.interfaces.rest.resources;
  * @author GeOps Labs
  */
 public record DeleteFavoriteResource(
-    String userId,
-    String offerId
+    Long userId,
+    Long offerId
 ) {
     /**
      * Compact constructor that validates the resource parameters
@@ -19,12 +19,12 @@ public record DeleteFavoriteResource(
      * @throws IllegalArgumentException if validation fails
      */
     public DeleteFavoriteResource {
-        if (userId == null || userId.isBlank()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+        if (userId == null) {
+            throw new IllegalArgumentException("userId cannot be null");
         }
 
-        if (offerId == null || offerId.isBlank()) {
-            throw new IllegalArgumentException("offerId cannot be null or empty");
+        if (offerId == null) {
+            throw new IllegalArgumentException("offerId cannot be null");
         }
     }
 }

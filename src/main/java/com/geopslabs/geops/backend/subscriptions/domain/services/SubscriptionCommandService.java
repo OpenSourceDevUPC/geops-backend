@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.subscriptions.domain.services;
 
 import com.geopslabs.geops.backend.subscriptions.domain.model.aggregates.Subscription;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.CreateSubscriptionCommand;
+import com.geopslabs.geops.backend.subscriptions.domain.model.commands.DeleteSubscriptionCommand;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.UpdateSubscriptionCommand;
 
 import java.util.Optional;
@@ -45,14 +46,25 @@ public interface SubscriptionCommandService {
     Optional<Subscription> handle(UpdateSubscriptionCommand command);
 
     /**
-     * Deletes a subscription plan by its ID.
+     * Handles the deletion of a subscription plan.
      *
-     * This method permanently removes a subscription plan from the system.
+     * This method processes the command to delete a subscription plan from the system.
      * This operation should be used with caution as it cannot be undone.
      *
+     * @param command The command containing the subscription ID to delete
+     * @return true if the subscription was successfully deleted, false if not found
+     * @throws IllegalArgumentException if the command contains invalid data
+     */
+    boolean handle(DeleteSubscriptionCommand command);
+
+    /**
+     * Deletes a subscription plan by its ID.
+     *
+     * @deprecated Use handle(DeleteSubscriptionCommand) instead
      * @param subscriptionId The unique identifier of the subscription to delete
      * @return true if the subscription was successfully deleted, false if not found
      * @throws IllegalArgumentException if the subscription ID is invalid
      */
+    @Deprecated
     boolean deleteSubscription(Long subscriptionId);
 }

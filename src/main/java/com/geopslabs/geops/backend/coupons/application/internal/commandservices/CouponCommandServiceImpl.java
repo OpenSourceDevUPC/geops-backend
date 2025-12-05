@@ -6,6 +6,8 @@ import com.geopslabs.geops.backend.coupons.domain.model.commands.CreateManyCoupo
 import com.geopslabs.geops.backend.coupons.domain.model.commands.UpdateCouponCommand;
 import com.geopslabs.geops.backend.coupons.domain.services.CouponCommandService;
 import com.geopslabs.geops.backend.coupons.infrastructure.persistence.jpa.CouponRepository;
+import com.geopslabs.geops.backend.identity.infrastructure.persistence.jpa.UserRepository;
+import com.geopslabs.geops.backend.payments.infrastructure.persistence.jpa.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +31,22 @@ import java.util.Optional;
 public class CouponCommandServiceImpl implements CouponCommandService {
 
     private final CouponRepository couponRepository;
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     /**
      * Constructor for dependency injection
      *
      * @param couponRepository The repository for coupon data access
+     * @param userRepository The repository for user data access
+     * @param paymentRepository The repository for payment data access
      */
-    public CouponCommandServiceImpl(CouponRepository couponRepository) {
+    public CouponCommandServiceImpl(CouponRepository couponRepository,
+                                    UserRepository userRepository,
+                                    PaymentRepository paymentRepository) {
         this.couponRepository = couponRepository;
+        this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     /**
@@ -50,8 +60,19 @@ public class CouponCommandServiceImpl implements CouponCommandService {
                 throw new IllegalArgumentException("Coupon code already exists: " + command.code());
             }
 
-            // Create new coupon from command
-            var coupon = new Coupon(command);
+            // Fetch user and payment entities
+            var userOptional = userRepository.findById(command.userId());
+            var paymentOptional = paymentRepository.findById(command.paymentId());
+
+            if (userOptional.isEmpty()) {
+                throw new IllegalArgumentException("User not found: " + command.userId());
+            }
+            if (paymentOptional.isEmpty()) {
+                throw new IllegalArgumentException("Payment not found: " + command.paymentId());
+            }
+
+            // Create new coupon from command with entities
+            var coupon = new Coupon(command, userOptional.get(), paymentOptional.get());
 
             // Save the coupon to the repository
             var savedCoupon = couponRepository.save(coupon);
@@ -78,9 +99,17 @@ public class CouponCommandServiceImpl implements CouponCommandService {
                 try {
                     // Check if coupon code already exists
                     if (!couponRepository.existsByCode(couponCommand.code())) {
-                        var coupon = new Coupon(couponCommand);
-                        var savedCoupon = couponRepository.save(coupon);
-                        createdCoupons.add(savedCoupon);
+                        // Fetch user and payment entities
+                        var userOptional = userRepository.findById(couponCommand.userId());
+                        var paymentOptional = paymentRepository.findById(couponCommand.paymentId());
+
+                        if (userOptional.isPresent() && paymentOptional.isPresent()) {
+                            var coupon = new Coupon(couponCommand, userOptional.get(), paymentOptional.get());
+                            var savedCoupon = couponRepository.save(coupon);
+                            createdCoupons.add(savedCoupon);
+                        } else {
+                            System.err.println("User or Payment not found for coupon: " + couponCommand.code());
+                        }
                     } else {
                         // Log duplicate code warning but continue processing
                         System.err.println("Skipping duplicate coupon code: " + couponCommand.code());

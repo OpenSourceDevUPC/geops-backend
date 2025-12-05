@@ -33,6 +33,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     private String email;
 
     /**
+     * Phone number of the user (unique identifier)
+     */
+    @Column(name = "phone", nullable = false, unique = true, length = 20)
+    private String phone;
+
+    /**
      * Encrypted password for authentication
      */
     @Column(name = "password", nullable = false, length = 255)
@@ -45,7 +51,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     private String role;
 
     /**
-     * Subscription plan of the user (e.g., FREEMIUM, PREMIUM)
+     * Subscription plan of the user (e.g., BASIC, PREMIUM)
      */
     @Column(name = "plan", nullable = false, length = 50)
     private String plan;
@@ -61,13 +67,15 @@ public class User extends AuditableAbstractAggregateRoot<User> {
      *
      * @param name The user's full name
      * @param email The user's email address
+     * @param phone The user's phone number
      * @param password The user's encrypted password
      * @param role The user's role
      * @param plan The user's subscription plan
      */
-    public User(String name, String email, String password, String role, String plan) {
+    public User(String name, String email, String phone, String password, String role, String plan) {
         this.name = name;
         this.email = email;
+        this.phone = phone;
         this.password = password;
         this.role = role;
         this.plan = plan;
@@ -78,15 +86,19 @@ public class User extends AuditableAbstractAggregateRoot<User> {
      *
      * @param name The updated name
      * @param email The updated email
+     * @param phone The updated phone
      * @param role The updated role
      * @param plan The updated plan
      */
-    public void updateUser(String name, String email, String role, String plan) {
+    public void updateUser(String name, String email, String phone, String role, String plan) {
         if (name != null && !name.isBlank()) {
             this.name = name;
         }
         if (email != null && !email.isBlank()) {
             this.email = email;
+        }
+        if (phone != null && !phone.isBlank()) {
+            this.phone = phone;
         }
         if (role != null && !role.isBlank()) {
             this.role = role;

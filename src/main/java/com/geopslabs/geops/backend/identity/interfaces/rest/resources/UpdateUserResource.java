@@ -10,6 +10,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
  * @summary Request resource for updating a user
  * @param name The updated name (optional)
  * @param email The updated email (optional)
+ * @param phone The updated phone (optional)
  * @param role The updated role (optional)
  * @param plan The updated subscription plan (optional)
  *
@@ -19,6 +20,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 public record UpdateUserResource(
     String name,
     String email,
+    String phone,
     String role,
     String plan
 ) {

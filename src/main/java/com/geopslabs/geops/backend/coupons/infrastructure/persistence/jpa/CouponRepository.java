@@ -29,7 +29,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @param userId The unique identifier of the user
      * @return A List of Coupon objects for the specified user
      */
-    List<Coupon> findByUserId(String userId);
+    List<Coupon> findByUser_Id(Long userId);
 
     /**
      * Finds all coupons generated from a specific payment.
@@ -37,7 +37,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @param paymentId The unique identifier of the payment
      * @return A List of Coupon objects generated from the specified payment
      */
-    List<Coupon> findByPaymentId(String paymentId);
+    List<Coupon> findByPayment_Id(Long paymentId);
 
     /**
      * Finds a coupon by its unique redemption code.
@@ -73,9 +73,9 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @param currentTime The current timestamp for comparison
      * @return A List of valid Coupon objects for the specified user
      */
-    @Query("SELECT c FROM Coupon c WHERE c.userId = :userId AND " +
+    @Query("SELECT c FROM Coupon c WHERE c.user.id = :userId AND " +
            "(c.expiresAt IS NULL OR c.expiresAt > :currentTime)")
-    List<Coupon> findValidCouponsByUserId(@Param("userId") String userId,
+    List<Coupon> findValidCouponsByUserId(@Param("userId") Long userId,
                                          @Param("currentTime") String currentTime);
 
     /**
@@ -111,7 +111,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @param userId The unique identifier of the user
      * @return The count of coupons for the specified user
      */
-    long countByUserId(String userId);
+    long countByUser_Id(Long userId);
 
     /**
      * Finds coupons expiring within a specific timeframe.

@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.cart.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,12 +13,15 @@ import java.util.List;
  * Represents a user's shopping cart containing multiple CartItem entries.
  */
 @Entity
-@Table(name = "carts")
+@Table(name = "carts", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id")
+})
 public class Cart extends AuditableAbstractAggregateRoot<Cart> {
 
-    @Column(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter
-    private String userId;
+    private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Getter
@@ -35,8 +39,17 @@ public class Cart extends AuditableAbstractAggregateRoot<Cart> {
         // JPA
     }
 
-    public Cart(String userId) {
-        this.userId = userId;
+    public Cart(User user) {
+        this.user = user;
+    }
+
+    /**
+     * Gets the user ID for this cart
+     *
+     * @return The user ID
+     */
+    public Long getUserId() {
+        return this.user != null ? this.user.getId() : null;
     }
 
     public void addItem(CartItem item) {

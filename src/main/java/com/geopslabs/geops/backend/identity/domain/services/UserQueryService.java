@@ -4,6 +4,7 @@ import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetAllUsersQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByEmailQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByIdQuery;
+import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByPhoneQuery;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,5 +45,13 @@ public interface UserQueryService {
      * @return An Optional containing the user if found, empty otherwise
      */
     Optional<User> handle(GetUserByEmailQuery query);
+
+    /**
+     * Handles the query to get a user by phone
+     *
+     * @param query The GetUserByPhoneQuery containing the user phone
+     * @return An Optional containing the user if found, empty otherwise
+     */
+    Optional<User> handle(GetUserByPhoneQuery query);
 }
 

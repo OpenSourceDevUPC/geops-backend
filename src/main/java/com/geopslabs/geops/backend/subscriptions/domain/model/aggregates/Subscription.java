@@ -1,8 +1,8 @@
 package com.geopslabs.geops.backend.subscriptions.domain.model.aggregates;
 
+import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.CreateSubscriptionCommand;
 import com.geopslabs.geops.backend.subscriptions.domain.model.commands.UpdateSubscriptionCommand;
-import com.geopslabs.geops.backend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -17,7 +17,6 @@ import java.math.BigDecimal;
  *
  * @summary Manages subscription plans (BASIC/PREMIUM)
  * @since 1.0
- * @author GeOps Labs
  */
 @Entity
 @Table(name = "subscriptions")
@@ -33,7 +32,6 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
     /**
      * Whether this subscription plan is recommended
      *
-     * Persist as numeric (TINYINT(1)) to avoid accidental string storage/truncation
      */
     @Column(name = "recommended", nullable = false, columnDefinition = "TINYINT(1)")
     @Getter
@@ -86,7 +84,7 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
      * @return true if subscription type is PREMIUM, false otherwise
      */
     public boolean isPremium() {
-        return this.type == SubscriptionType.FREEMIUM;
+        return this.type == SubscriptionType.PREMIUM;
     }
 
     /**
@@ -103,7 +101,6 @@ public class Subscription extends AuditableAbstractAggregateRoot<Subscription> {
      */
     public enum SubscriptionType {
         BASIC,
-        FREEMIUM,
         PREMIUM
     }
 }

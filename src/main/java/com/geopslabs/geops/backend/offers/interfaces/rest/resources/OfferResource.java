@@ -5,12 +5,12 @@ import java.time.LocalDate;
 
 /**
  * OfferResource
- *
  * Resource DTO for offer responses via REST API
  * This resource represents the response payload containing offer information
  *
  * @summary Response resource for offer data
  * @param id The unique identifier of the offer (database ID)
+ * @param campaignId The unique identifier of the campaign
  * @param title The title of the offer
  * @param partner The partner providing the offer
  * @param price The price of the offer
@@ -28,6 +28,7 @@ import java.time.LocalDate;
  */
 public record OfferResource(
     Long id,
+    Long campaignId,
     String title,
     String partner,
     BigDecimal price,

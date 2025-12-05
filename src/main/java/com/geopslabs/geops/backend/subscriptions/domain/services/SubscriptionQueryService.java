@@ -2,6 +2,7 @@ package com.geopslabs.geops.backend.subscriptions.domain.services;
 
 import com.geopslabs.geops.backend.subscriptions.domain.model.aggregates.Subscription;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsByTypeQuery;
+import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetAllSubscriptionsQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetSubscriptionByIdQuery;
 import com.geopslabs.geops.backend.subscriptions.domain.model.queries.GetRecommendedSubscriptionsQuery;
 
@@ -35,6 +36,17 @@ public interface SubscriptionQueryService {
     Optional<Subscription> handle(GetSubscriptionByIdQuery query);
 
     /**
+     * Handles the query to retrieve all subscription plans.
+     *
+     * This method processes the query to find all subscription plans in the system.
+     * It's used for displaying all available options to users.
+     *
+     * @param query The query for all subscriptions
+     * @return A List of all Subscription objects
+     */
+    List<Subscription> handle(GetAllSubscriptionsQuery query);
+
+    /**
      * Handles the query to retrieve all subscriptions with a specific type.
      *
      * This method processes the query to find subscriptions filtered by their type (BASIC/PREMIUM).
@@ -60,33 +72,30 @@ public interface SubscriptionQueryService {
     /**
      * Retrieves all subscription plans in the system.
      *
-     * This method provides a comprehensive view of all available subscription plans,
-     * useful for displaying all options to users and administrative purposes.
-     *
+     * @deprecated Use handle(GetAllSubscriptionsQuery) instead
      * @return A List of all Subscription objects in the system
      */
+    @Deprecated
     List<Subscription> getAllSubscriptions();
 
     /**
      * Retrieves subscription plans by type.
      *
-     * This method finds subscriptions of a specific type (BASIC or PREMIUM),
-     * useful for categorizing and displaying subscription options.
-     *
+     * @deprecated Use handle(GetAllSubscriptionsByTypeQuery) instead
      * @param type The subscription type to filter by
      * @return A List of Subscription objects with the specified type
      * @throws IllegalArgumentException if type is null
      */
+    @Deprecated
     List<Subscription> getSubscriptionsByType(Subscription.SubscriptionType type);
 
     /**
      * Retrieves all recommended subscription plans.
      *
-     * This method finds all subscription plans marked as recommended,
-     * useful for highlighting preferred options to users.
-     *
+     * @deprecated Use handle(GetRecommendedSubscriptionsQuery) instead
      * @return A List of recommended Subscription objects
      */
+    @Deprecated
     List<Subscription> getRecommendedSubscriptions();
 
     /**

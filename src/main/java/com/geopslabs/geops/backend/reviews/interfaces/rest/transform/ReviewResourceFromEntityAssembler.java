@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.reviews.interfaces.rest.resources.ReviewResou
  *
  * Assembler class responsible for converting Review entity objects
  * to ReviewResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses.
+ * of converting domain layer entities to interface layer Resources for API responses.
  *
  * @summary Converts Review entity to ReviewResource
  * @since 1.0

@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.reviews.interfaces.rest.resources.UpdateRevie
  *
  * Assembler class responsible for converting UpdateReviewResource objects
  * to UpdateReviewCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands.
+ * of converting interface layer Resources to domain layer commands.
  *
  * @summary Converts UpdateReviewResource to UpdateReviewCommand
  * @since 1.0

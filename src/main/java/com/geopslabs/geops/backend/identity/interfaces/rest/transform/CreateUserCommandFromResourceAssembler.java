@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.identity.interfaces.rest.resources.CreateUser
  *
  * Assembler class responsible for converting CreateUserResource objects
  * to CreateUserCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands
+ * of converting interface layer Resources to domain layer commands
  *
  * @summary Converts CreateUserResource to CreateUserCommand
  * @since 1.0

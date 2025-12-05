@@ -6,10 +6,10 @@ import com.geopslabs.geops.backend.identity.interfaces.rest.resources.DetailsCon
 /**
  * DetailsConsumerResourceFromEntityAssembler
  *
- * Assembler class that transforms DetailsConsumer entities to DetailsConsumerResource DTOs
+ * Assembler class that transforms DetailsConsumer entities to DetailsConsumerResource Resources
  * This class follows the Assembler pattern to separate domain objects from REST representations
  *
- * @summary Transforms DetailsConsumer entities to resource DTOs
+ * @summary Transforms DetailsConsumer entities to resource Resources
  * @since 1.0
  * @author GeOps Labs
  */
@@ -19,7 +19,7 @@ public class DetailsConsumerResourceFromEntityAssembler {
      * Transforms a DetailsConsumer entity to a DetailsConsumerResource
      *
      * @param entity The DetailsConsumer entity to transform
-     * @return The corresponding DetailsConsumerResource DTO
+     * @return The corresponding DetailsConsumerResource Resource
      */
     public static DetailsConsumerResource toResourceFromEntity(DetailsConsumer entity) {
         return new DetailsConsumerResource(

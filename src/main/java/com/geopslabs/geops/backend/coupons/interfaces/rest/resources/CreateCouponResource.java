@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.coupons.interfaces.rest.resources;
 /**
  * CreateCouponResource
  *
- * Resource DTO for creating coupons via REST API.
+ * Resource Resource for creating coupons via REST API.
  * This resource represents the request payload for coupon creation,
  * containing all necessary information for setting up a new coupon.
  * Based on the frontend Coupon entity structure.

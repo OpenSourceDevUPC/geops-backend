@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 /**
  * OfferResource
- * Resource DTO for offer responses via REST API
+ * Resource Resource for offer responses via REST API
  * This resource represents the response payload containing offer information
  *
  * @summary Response resource for offer data

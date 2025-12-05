@@ -7,7 +7,7 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.CreateOfferR
  * CreateOfferCommandFromResourceAssembler
  * Assembler class responsible for converting CreateOfferResource objects
  * to CreateOfferCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands
+ * of converting interface layer Resources to domain layer commands
  *
  * @summary Converts CreateOfferResource to CreateOfferCommand
  * @since 1.0

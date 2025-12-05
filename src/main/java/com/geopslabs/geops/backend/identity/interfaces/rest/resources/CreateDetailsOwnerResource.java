@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * CreateDetailsOwnerResource
  *
- * Resource DTO for creating owner details via REST API
+ * Resource Resource for creating owner details via REST API
  * This resource represents the request payload for creating new owner details
  *
  * @summary Request resource for creating owner details

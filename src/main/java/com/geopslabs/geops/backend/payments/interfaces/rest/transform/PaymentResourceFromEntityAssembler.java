@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.payments.interfaces.rest.resources.PaymentRes
  *
  * Assembler class responsible for converting Payment entity objects
  * to PaymentResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses.
+ * of converting domain layer entities to interface layer Resources for API responses.
  *
  * @summary Converts Payment entity to PaymentResource
  * @since 1.0

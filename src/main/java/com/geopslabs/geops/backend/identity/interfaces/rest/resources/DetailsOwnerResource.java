@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * DetailsOwnerResource
  *
- * Resource DTO for owner details responses via REST API
+ * Resource Resource for owner details responses via REST API
  * This resource represents the response payload containing owner details information
  *
  * @summary Response resource for owner details data

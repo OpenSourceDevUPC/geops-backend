@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * CreatePaymentResource
  *
- * Resource DTO for creating payment transactions via REST API.
+ * Resource Resource for creating payment transactions via REST API.
  * This resource represents the request payload for payment creation,
  * containing all necessary information for processing a payment transaction.
  *

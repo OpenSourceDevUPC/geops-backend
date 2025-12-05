@@ -8,7 +8,7 @@ import com.geopslabs.geops.backend.subscriptions.interfaces.rest.resources.Creat
  *
  * Assembler class responsible for converting CreateSubscriptionResource objects
  * to CreateSubscriptionCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands.
+ * of converting interface layer Resources to domain layer commands.
  *
  * @summary Converts CreateSubscriptionResource to CreateSubscriptionCommand
  * @since 1.0

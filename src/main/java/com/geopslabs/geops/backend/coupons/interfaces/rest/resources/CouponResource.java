@@ -5,7 +5,7 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.OfferResourc
 /**
  * CouponResource
  *
- * Resource DTO for coupon responses via REST API.
+ * Resource Resource for coupon responses via REST API.
  * This resource represents the response payload containing coupon information
  * when retrieving coupon data from the system.
  * Based on the frontend Coupon entity structure.

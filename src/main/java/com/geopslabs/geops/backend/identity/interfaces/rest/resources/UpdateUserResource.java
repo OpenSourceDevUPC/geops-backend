@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * UpdateUserResource
  *
- * Resource DTO for updating an existing user via REST API
+ * Resource Resource for updating an existing user via REST API
  * This resource represents the request payload for user updates
  * All fields are optional - only provided fields will be updated
  *

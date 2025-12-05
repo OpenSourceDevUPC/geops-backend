@@ -7,7 +7,7 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.OfferResourc
  * OfferResourceFromEntityAssembler
  * Assembler class responsible for converting Offer entity objects
  * to OfferResource objects. This transformation follows the DDD pattern
- * of converting domain layer entities to interface layer DTOs for API responses
+ * of converting domain layer entities to interface layer Resources for API responses
  *
  * @summary Converts Offer entity to OfferResource
  * @since 1.0
@@ -32,7 +32,7 @@ public class OfferResourceFromEntityAssembler {
             entity.getPartner(),
             entity.getPrice(),
             entity.getCodePrefix(),
-            entity.getValidTo(),
+            entity.getvalidTo(),
             entity.getRating(),
             entity.getLocation(),
             entity.getCategory(),

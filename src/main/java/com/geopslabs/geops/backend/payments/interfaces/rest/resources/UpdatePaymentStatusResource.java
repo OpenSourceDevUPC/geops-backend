@@ -5,7 +5,7 @@ import com.geopslabs.geops.backend.payments.domain.model.aggregates.Payment.Paym
 /**
  * UpdatePaymentStatusResource
  *
- * Resource DTO for updating payment status via REST API.
+ * Resource Resource for updating payment status via REST API.
  * This resource represents the request payload for updating the status
  * of an existing payment transaction.
  *

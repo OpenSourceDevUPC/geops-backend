@@ -3,7 +3,7 @@ package com.geopslabs.geops.backend.identity.interfaces.rest.resources;
 /**
  * SignUpResource
  *
- * Resource DTO for user registration via REST API
+ * Resource Resource for user registration via REST API
  * This resource represents the request payload for user sign-up
  *
  * @summary Request resource for user registration

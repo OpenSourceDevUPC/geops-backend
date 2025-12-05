@@ -6,7 +6,7 @@ import java.time.LocalDate;
 /**
  * UpdateOfferResource
  *
- * Resource DTO for updating offers via REST API
+ * Resource Resource for updating offers via REST API
  * This resource represents the request payload for offer updates
  * All fields are optional except for the ID (provided via path variable)
  *

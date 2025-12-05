@@ -7,7 +7,7 @@ import com.geopslabs.geops.backend.offers.interfaces.rest.resources.UpdateOfferR
  * UpdateOfferCommandFromResourceAssembler
  * Assembler class responsible for converting UpdateOfferResource objects
  * to UpdateOfferCommand objects. This transformation follows the DDD pattern
- * of converting interface layer DTOs to domain layer commands
+ * of converting interface layer Resources to domain layer commands
  *
  * @summary Converts UpdateOfferResource to UpdateOfferCommand
  * @since 1.0

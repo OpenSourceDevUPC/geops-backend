@@ -69,7 +69,8 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
         this.CTR = 0;
     }
 
-    public void edit(String name, String description, LocalDate startDate, LocalDate endDate, ECampaignStatus status, Float estimatedBudget) {
+    public void edit(String name, String description, LocalDate startDate, LocalDate endDate, ECampaignStatus status,
+                     Float estimatedBudget, Long totalImpressions, Long totalClicks, Float ctr) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -77,6 +78,15 @@ public class Campaign extends AuditableAbstractAggregateRoot<Campaign> {
         this.status = status;
         if (estimatedBudget != null) {
             this.estimatedBudget = estimatedBudget;
+        }
+        if (totalImpressions != null) {
+            this.totalImpressions = Math.max(0L, totalImpressions);
+        }
+        if (totalClicks != null) {
+            this.totalClicks = Math.max(0L, totalClicks);
+        }
+        if (ctr != null) {
+            this.CTR = Math.max(0, ctr);
         }
     }
 }

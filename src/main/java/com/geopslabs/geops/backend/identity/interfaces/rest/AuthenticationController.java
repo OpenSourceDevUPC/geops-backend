@@ -1,5 +1,7 @@
 package com.geopslabs.geops.backend.identity.interfaces.rest;
 
+import com.geopslabs.geops.backend.identity.application.internal.outboundservices.hashing.HashingService;
+import com.geopslabs.geops.backend.identity.application.internal.outboundservices.tokens.TokenService;
 import com.geopslabs.geops.backend.identity.domain.model.commands.CreateUserCommand;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByEmailQuery;
 import com.geopslabs.geops.backend.identity.domain.model.queries.GetUserByPhoneQuery;
@@ -31,21 +33,30 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Tag(name = "Authentication", description = "User authentication and registration operations")
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = APPLICATION_JSON_VALUE)
+@CrossOrigin(origins = "*")
 public class AuthenticationController {
 
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    private final HashingService hashingService;
+    private final TokenService tokenService;
 
     /**
      * Constructor for dependency injection
      *
      * @param userCommandService Service for handling user commands
      * @param userQueryService Service for handling user queries
+     * @param hashingService Service for hashing passwords
+     * @param tokenService Service for generating tokens
      */
     public AuthenticationController(UserCommandService userCommandService,
-                                   UserQueryService userQueryService) {
+                                   UserQueryService userQueryService,
+                                   HashingService hashingService,
+                                   TokenService tokenService) {
         this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;
+        this.hashingService = hashingService;
+        this.tokenService = tokenService;
     }
 
     /**
@@ -113,6 +124,7 @@ public class AuthenticationController {
         }
 
         var user = userOptional.get();
+        var token = tokenService.generateToken(user.getEmail());
         var authResource = new AuthenticationResource(
             user.getId(),
             user.getName(),
@@ -120,6 +132,7 @@ public class AuthenticationController {
             user.getPhone(),
             user.getRole(),
             user.getPlan(),
+            token,
             "User registered successfully"
         );
 
@@ -158,10 +171,12 @@ public class AuthenticationController {
 
         var user = userOptional.get();
 
-        // Validate password (simplified - in production use proper password hashing)
-        if (!user.getPassword().equals(resource.password())) {
+        // Validate password
+        if (!hashingService.matches(resource.password(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        var token = tokenService.generateToken(user.getEmail());
 
         var authResource = new AuthenticationResource(
             user.getId(),
@@ -170,6 +185,7 @@ public class AuthenticationController {
             user.getPhone(),
             user.getRole(),
             user.getPlan(),
+            token,
             "User authenticated successfully"
         );
 

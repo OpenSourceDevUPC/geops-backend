@@ -25,6 +25,7 @@ public record AuthenticationResource(
     String phone,
     String role,
     String plan,
+    String token,
     String message
 ) {
 }

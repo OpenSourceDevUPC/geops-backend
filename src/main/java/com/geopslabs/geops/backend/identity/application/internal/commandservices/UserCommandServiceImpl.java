@@ -1,5 +1,6 @@
 package com.geopslabs.geops.backend.identity.application.internal.commandservices;
 
+import com.geopslabs.geops.backend.identity.application.internal.outboundservices.hashing.HashingService;
 import com.geopslabs.geops.backend.identity.domain.model.aggregates.User;
 import com.geopslabs.geops.backend.identity.domain.model.commands.CreateUserCommand;
 import com.geopslabs.geops.backend.identity.domain.model.commands.DeleteUserCommand;
@@ -29,19 +30,23 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
     private final NotificationFactoryService notificationFactory;
+    private final HashingService hashingService;
 
     /**
      * Constructor for dependency injection
      *
      * @param userRepository The repository for user data access
      * @param notificationFactory Service to create notifications
+     * @param hashingService Service to hash passwords
      */
     public UserCommandServiceImpl(
         UserRepository userRepository,
-        NotificationFactoryService notificationFactory
+        NotificationFactoryService notificationFactory,
+        HashingService hashingService
     ) {
         this.userRepository = userRepository;
         this.notificationFactory = notificationFactory;
+        this.hashingService = hashingService;
     }
 
     /**
@@ -67,7 +72,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 command.name(),
                 command.email(),
                 command.phone(),
-                command.password(),
+                hashingService.encode(command.password()),
                 command.role(),
                 command.plan()
             );
